@@ -5,36 +5,36 @@ using SQLite;
 
 public class TodoItemRepository : ITodoItemRepository
 {
-    private SQLiteAsyncConnection connection;
+	private SQLiteAsyncConnection connection;
     public event EventHandler<TodoItem> OnItemAdded; 
     public event EventHandler<TodoItem> OnItemUpdated;
 
-    public async Task<List<TodoItem>> GetItems()
+    public async Task<List<TodoItem>> GetItemsAsync()
     {
         return null; // Just to make it build
     }
 
-    public async Task AddItem(TodoItem item)
+    public async Task AddItemAsync(TodoItem item)
     {
     }
 
-    public async Task UpdateItem(TodoItem item)
+    public async Task UpdateItemAsync(TodoItem item)
     {
     }
 
-    public async Task AddOrUpdate(TodoItem item)
+    public async Task AddOrUpdateAsync(TodoItem item)
     {
         if (item.Id == 0)
         {
-            await AddItem(item);
+            await AddItemAsync(item);
         }
         else
         {
-            await UpdateItem(item);
+            await UpdateItemAsync(item);
         }
     }
-
-    private async Task CreateConnection()
+    
+    private async Task CreateConnectionAsync()
     {
         if (connection != null)
         {
