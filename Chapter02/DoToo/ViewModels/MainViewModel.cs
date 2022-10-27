@@ -15,6 +15,16 @@ public partial class MainViewModel : ViewModel
     [ObservableProperty]
     ObservableCollection<TodoItemViewModel> items;
 
+    [ObservableProperty]
+    bool showAll;
+
+    [RelayCommand]
+    public async Task ToggleFilterAsync()
+    {
+        ShowAll = !ShowAll;
+        await LoadDataAsync();
+    }
+
     public MainViewModel(ITodoItemRepository repository, IServiceProvider services)
     {
         this.repository = repository;
@@ -28,6 +38,11 @@ public partial class MainViewModel : ViewModel
     private async Task LoadDataAsync()
     {
         var items = await repository.GetItemsAsync(); 
+        if (!ShowAll)
+        {
+            items = items.Where(x => x.Completed == false).ToList();
+        }
+
         var itemViewModels = items.Select(i => CreateTodoItemViewModel(i));
         Items = new ObservableCollection<TodoItemViewModel>(itemViewModels);
     }
@@ -41,6 +56,15 @@ public partial class MainViewModel : ViewModel
 
     private void ItemStatusChanged(object sender, EventArgs e)
     {
+        if (sender is TodoItemViewModel item)
+        {
+            if (!ShowAll && item.Item.Completed)
+            {
+                Items.Remove(item);
+            }
+
+            Task.Run(async () => await repository.UpdateItemAsync(item.Item));
+        }
     }
 
     [RelayCommand]
