@@ -9,7 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MauiMigration.Android", "Ma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MauiMigration.iOS", "MauiMigration\MauiMigration.iOS\MauiMigration.iOS.csproj", "{AF59C87C-D0BF-43DE-9FD2-CC37FBB97FB1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MauiMigration", "MauiMigration\MauiMigration\MauiMigration.csproj", "{A0D7FEB6-41D0-46F2-AFB2-293F66B40277}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MauiMigration", "MauiMigration\MauiMigration\MauiMigration.csproj", "{A0D7FEB6-41D0-46F2-AFB2-293F66B40277}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMauiApp", "MyMauiApp\MyMauiApp.csproj", "{AFE3FC9D-2513-48C6-96BD-691803CA357F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -171,6 +173,42 @@ Global
 		{A0D7FEB6-41D0-46F2-AFB2-293F66B40277}.Release|x86.ActiveCfg = Release|Any CPU
 		{A0D7FEB6-41D0-46F2-AFB2-293F66B40277}.Release|x86.Build.0 = Release|Any CPU
 		{A0D7FEB6-41D0-46F2-AFB2-293F66B40277}.Release|x86.Deploy.0 = Release|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Debug|ARM.Build.0 = Debug|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Debug|ARM.Deploy.0 = Debug|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Debug|iPhone.Deploy.0 = Debug|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Debug|iPhoneSimulator.Deploy.0 = Debug|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Debug|x64.Build.0 = Debug|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Debug|x64.Deploy.0 = Debug|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Debug|x86.Build.0 = Debug|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Debug|x86.Deploy.0 = Debug|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Release|ARM.ActiveCfg = Release|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Release|ARM.Build.0 = Release|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Release|ARM.Deploy.0 = Release|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Release|iPhone.Build.0 = Release|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Release|iPhone.Deploy.0 = Release|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Release|iPhoneSimulator.Deploy.0 = Release|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Release|x64.ActiveCfg = Release|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Release|x64.Build.0 = Release|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Release|x64.Deploy.0 = Release|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Release|x86.ActiveCfg = Release|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Release|x86.Build.0 = Release|Any CPU
+		{AFE3FC9D-2513-48C6-96BD-691803CA357F}.Release|x86.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
