@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+
+
 
 namespace MauiMigration.Views
 {
