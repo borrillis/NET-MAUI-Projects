@@ -1,5 +1,8 @@
 ﻿namespace News.ViewModels;
 
-public abstract class ViewModel
+using CommunityToolkit.Mvvm.ComponentModel;
+
+[ObservableObject]
+public abstract partial class ViewModel
 {
 }
