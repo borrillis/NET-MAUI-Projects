@@ -65,6 +65,14 @@ public partial class SwiperControl : ContentView
         denyStackLayout.Opacity = -opacity;
     }
 
+    private bool CheckForExitCriteria()
+    {
+        var width = _screenWidth == -1 ? 400 : _screenWidth;
+        var halfScreenWidth = width / 2;
+        var decisionBreakpoint = DeadZone * halfScreenWidth;
+        return (Math.Abs(photo.TranslationX) > decisionBreakpoint);
+    }
+
     private void OnPanUpdated(object sender, PanUpdatedEventArgs e)
     {
         switch (e.StatusType)
