@@ -1,4 +1,4 @@
-using System;
+using SQLite;
 
 namespace MeTracker.Models;
 
@@ -12,6 +12,8 @@ public class Location
         Longitude = longitude;
     }
 
+    [PrimaryKey]
+    [AutoIncrement]
     public int Id { get; set; }
     public double Latitude { get; set; }
     public double Longitude { get; set; }
