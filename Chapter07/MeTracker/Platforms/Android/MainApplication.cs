@@ -1,6 +1,11 @@
 ﻿using Android.App;
 using Android.Runtime;
 
+[assembly: UsesPermission(Android.Manifest.Permission.AccessCoarseLocation)]
+[assembly: UsesPermission(Android.Manifest.Permission.AccessFineLocation)]
+[assembly: UsesPermission(Android.Manifest.Permission.AccessWifiState)]
+[assembly: UsesPermission(Android.Manifest.Permission.ReceiveBootCompleted)]
+
 namespace MeTracker;
 
 [Application]
