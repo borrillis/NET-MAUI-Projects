@@ -19,6 +19,11 @@ public static class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
+        builder.Services.AddSingleton<Services.ILocationTrackingService, Services.LocationTrackingService>();
+        builder.Services.AddSingleton<Repositories.ILocationRepository, Repositories.LocationRepository>();
+
+        builder.Services.AddTransient(typeof(ViewModels.MainViewModel));
+        builder.Services.AddTransient(typeof(Views.MainView));
 
         return builder.Build();
     }
