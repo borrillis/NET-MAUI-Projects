@@ -1,12 +1,16 @@
+using MeTracker.ViewModels;
 using Microsoft.Maui.Maps;
 
 namespace MeTracker.Views;
 
 public partial class MainView : ContentPage
 {
-	public MainView()
-	{
+    public MainView(MainViewModel viewModel)
+    {
 		InitializeComponent();
+
+        BindingContext = viewModel;
+
         MainThread.BeginInvokeOnMainThread(async () =>
         {
             var status = await AppPermissions.CheckAndRequestRequiredPermissionAsync();
