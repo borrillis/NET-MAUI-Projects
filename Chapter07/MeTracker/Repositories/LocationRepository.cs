@@ -4,6 +4,14 @@ namespace MeTracker.Repositories;
 
 public class LocationRepository : ILocationRepository
 {
+    public async Task<List<Location>> GetAllAsync()
+    {
+        await CreateConnectionAsync();
+        var locations = await connection.Table<Location>().ToListAsync();
+
+        return locations;
+    }
+
     public async Task SaveAsync(Models.Location location)
     {
         await CreateConnectionAsync();
