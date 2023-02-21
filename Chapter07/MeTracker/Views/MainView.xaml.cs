@@ -1,4 +1,5 @@
 using MeTracker.ViewModels;
+using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
 
 namespace MeTracker.Views;
@@ -6,7 +7,7 @@ namespace MeTracker.Views;
 public partial class MainView : ContentPage
 {
     public MainView(MainViewModel viewModel)
-    {
+	{
 		InitializeComponent();
 
         BindingContext = viewModel;
