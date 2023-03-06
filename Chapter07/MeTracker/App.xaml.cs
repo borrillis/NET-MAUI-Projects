@@ -8,4 +8,11 @@ public partial class App : Application
 
         MainPage = new AppShell();
     }
+
+    protected override void OnResume()
+    {
+        base.OnResume();
+
+        MainPage = new AppShell();
+    }
 }
