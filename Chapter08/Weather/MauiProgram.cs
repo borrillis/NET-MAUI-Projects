@@ -24,6 +24,14 @@ public static class MauiProgram
 		builder.Services.AddSingleton<IWeatherService, OpenWeatherMapWeatherService>();
 
 		builder.Services.AddTransient<MainViewModel, MainViewModel>();
+		if (DeviceInfo.Idiom == DeviceIdiom.Phone)
+		{
+			builder.Services.AddTransient<IMainView, Views.Mobile.MainView>();
+		}
+		else
+		{
+			builder.Services.AddTransient<IMainView, Views.Desktop.MainView>();
+		}
 
         return builder.Build();
 	}

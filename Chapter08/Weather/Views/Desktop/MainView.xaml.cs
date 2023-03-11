@@ -2,7 +2,7 @@
 
 namespace Weather.Views.Desktop;
 
-public partial class MainView : ContentPage
+public partial class MainView : ContentPage, IMainView
 {
     public MainView(MainViewModel mainViewModel)
     {
