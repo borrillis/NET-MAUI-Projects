@@ -3,6 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Weather.Views.Mobile.MainView"
              Title="{Binding City}">
+
+    <RefreshView Command="{Binding Refresh}" IsRefreshing="{Binding IsRefreshing}">
+
         <CollectionView ItemsSource="{Binding Days}" IsGrouped="True" BackgroundColor="Transparent">
             <CollectionView.GroupHeaderTemplate>
                 <DataTemplate>
@@ -28,4 +31,5 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+    </RefreshView>
 </ContentPage>
