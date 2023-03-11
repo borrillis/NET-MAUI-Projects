@@ -1,4 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using Weather.Services;
+using Weather.ViewModels;
+using Weather.Views;
 
 namespace Weather;
 
@@ -18,7 +21,10 @@ public static class MauiProgram
 #if DEBUG
 		builder.Logging.AddDebug();
 #endif
+		builder.Services.AddSingleton<IWeatherService, OpenWeatherMapWeatherService>();
 
-		return builder.Build();
+		builder.Services.AddTransient<MainViewModel, MainViewModel>();
+
+        return builder.Build();
 	}
 }
