@@ -11,4 +11,16 @@ public partial class MainViewModel : ViewModel
     {
         this.weatherService = weatherService;
     }
+
+    public async Task LoadDataAsync()
+    {
+        var status = await AppPermissions.CheckAndRequestRequiredPermissionAsync();
+        if (status == PermissionStatus.Granted)
+        {
+            var location = await Geolocation.GetLastKnownLocationAsync() ??
+                           await Geolocation.GetLocationAsync();
+
+            var forecast = await weatherService.GetForecastAsync(location.Latitude, location.Longitude);
+        }
+    }
 }
