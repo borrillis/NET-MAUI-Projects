@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
+using Weather.Models;
 using Weather.Services;
 
 namespace Weather.ViewModels;
@@ -6,6 +9,12 @@ namespace Weather.ViewModels;
 public partial class MainViewModel : ViewModel
 {
     private readonly IWeatherService weatherService;
+
+    [ObservableProperty]
+    private string city;
+
+    [ObservableProperty]
+    private ObservableCollection<ForecastGroup> days;
 
     public MainViewModel(IWeatherService weatherService)
     {
@@ -21,6 +30,37 @@ public partial class MainViewModel : ViewModel
                            await Geolocation.GetLocationAsync();
 
             var forecast = await weatherService.GetForecastAsync(location.Latitude, location.Longitude);
+
+            var itemGroups = new List<ForecastGroup>();
+
+            foreach (var item in forecast.Items)
+            {
+                if (!itemGroups.Any())
+                {
+                    itemGroups.Add(new ForecastGroup(new List<ForecastItem>() { item })
+                    {
+                        Date = item.DateTime.Date
+                    });
+                    continue;
+                }
+
+                var group = itemGroups.SingleOrDefault(x => x.Date == item.DateTime.Date);
+
+                    if (group == null)
+                {
+                    itemGroups.Add(new ForecastGroup(new List<ForecastItem>() { item })
+                    {
+                        Date = item.DateTime.Date
+                    });
+
+                    continue;
+                }
+
+                group.Items.Add(item);
+            }
+
+            Days = new ObservableCollection<ForecastGroup>(itemGroups);
+            City = forecast.City;
         }
     }
 }
