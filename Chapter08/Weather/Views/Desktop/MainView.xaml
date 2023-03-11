@@ -7,6 +7,11 @@
         <ToolbarItem Text="Refresh" IconImageSource="refresh.png" Command="{Binding RefreshCommand}" />
     </ContentPage.ToolbarItems>
     <Grid>
+        <Image Aspect="AspectFill">
+            <Image.Source>
+                <UriImageSource Uri="https://upload.wikimedia.org/wikipedia/commons/7/79/Solnedg%C3%A5ng_%C3%B6ver_Laholmsbukten_augusti_2011.jpg" CachingEnabled="true" CacheValidity="1" />
+            </Image.Source>
+        </Image>
         <ScrollView BackgroundColor="Transparent">
             <FlexLayout BindableLayout.ItemsSource="{Binding Days}" Direction="Column" Wrap="NoWrap" Grow="0.0" Shrink="0.0">
                 <BindableLayout.ItemTemplate>
