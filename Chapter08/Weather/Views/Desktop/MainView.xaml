@@ -3,6 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Weather.Views.Desktop.MainView"
              Title="{Binding City}">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Refresh" IconImageSource="refresh.png" Command="{Binding RefreshCommand}" />
+    </ContentPage.ToolbarItems>
     <Grid>
         <ScrollView BackgroundColor="Transparent">
             <FlexLayout BindableLayout.ItemsSource="{Binding Days}" Direction="Column" Wrap="NoWrap" Grow="0.0" Shrink="0.0">

@@ -16,6 +16,12 @@ public partial class MainViewModel : ViewModel
     [ObservableProperty]
     private ObservableCollection<ForecastGroup> days;
 
+    [RelayCommand]
+    public async Task RefreshAsync()
+    {
+        await LoadDataAsync();
+    }
+
     public MainViewModel(IWeatherService weatherService)
     {
         this.weatherService = weatherService;
