@@ -16,6 +16,9 @@ public partial class MainViewModel : ViewModel
     [ObservableProperty]
     private ObservableCollection<ForecastGroup> days;
 
+    [ObservableProperty]
+    private bool isRefreshing;
+
     [RelayCommand]
     public async Task RefreshAsync()
     {
@@ -29,6 +32,8 @@ public partial class MainViewModel : ViewModel
 
     public async Task LoadDataAsync()
     {
+        IsRefreshing = true;
+
         var status = await AppPermissions.CheckAndRequestRequiredPermissionAsync();
         if (status == PermissionStatus.Granted)
         {
@@ -68,5 +73,8 @@ public partial class MainViewModel : ViewModel
             Days = new ObservableCollection<ForecastGroup>(itemGroups);
             City = forecast.City;
         }
+
+        IsRefreshing = false;
     }
+
 }

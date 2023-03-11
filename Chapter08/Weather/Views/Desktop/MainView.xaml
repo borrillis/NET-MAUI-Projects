@@ -34,5 +34,8 @@
                 </BindableLayout.ItemTemplate>
             </FlexLayout>
         </ScrollView>
+        <Border IsVisible="{Binding IsRefreshing}" BackgroundColor="#99FFFFFF" WidthRequest="100" HeightRequest="100" VerticalOptions="Center" HorizontalOptions="Center">
+            <ActivityIndicator Color="Black" IsRunning="True" />
+        </Border>
     </Grid>
 </ContentPage>
