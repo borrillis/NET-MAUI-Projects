@@ -24,6 +24,25 @@ internal class MLNetClassifier : IClassifier
 
     public ClassifierOutput Classify(byte[] imageBytes)
     {
+        (Tensor<float> tensor, byte[] resizedImage) = LoadInputTensor(imageBytes, inputSize, isBgr, isRange255);
+
+        var resultsCollection = session.Run(new List<NamedOnnxValue>
+                {
+                    NamedOnnxValue.CreateFromTensor<float>(inputName, tensor)
+                });
+
+        var topLabel = resultsCollection
+            ?.FirstOrDefault(i => i.Name == "classLabel")
+            ?.AsTensor<string>()
+            ?.First();
+
+        var labelScores = resultsCollection
+            ?.FirstOrDefault(i => i.Name == "loss")
+            ?.AsEnumerable<NamedOnnxValue>()
+            ?.First()
+            ?.AsDictionary<string, float>();
+
+        return ClassifierOutput.Create(topLabel, labelScores, resizedImage);
     }
 
     static (Tensor<float>, byte[] resizedImage) LoadInputTensor(byte[] imageBytes, int imageSize, bool isBgr, bool isRange255)
