@@ -1,4 +1,8 @@
 ﻿using Microsoft.ML.OnnxRuntime;
+using Microsoft.ML.OnnxRuntime.Tensors;
+using SixLabors.ImageSharp.Formats.Png;
+using Image = SixLabors.ImageSharp.Image;
+
 namespace HotdogOrNot.ImageClassifier;
 
 internal class MLNetClassifier : IClassifier
@@ -20,5 +24,51 @@ internal class MLNetClassifier : IClassifier
 
     public ClassifierOutput Classify(byte[] imageBytes)
     {
+    }
+
+    static (Tensor<float>, byte[] resizedImage) LoadInputTensor(byte[] imageBytes, int imageSize, bool isBgr, bool isRange255)
+    {
+        var input = new DenseTensor<float>(new[] { 1, 3, imageSize, imageSize });
+        byte[] pixelBytes;
+
+        using (var image = Image.Load<Rgba32>(imageBytes))
+        {
+            image.Mutate(x => x.Resize(imageSize, imageSize));
+
+            image.ProcessPixelRows(source =>
+            {
+                for (int y = 0; y < image.Height; y++)
+                {
+                    Span<Rgba32> pixelSpan = source.GetRowSpan(y);
+                    for (int x = 0; x < image.Width; x++)
+                    {
+                        if (isBgr)
+                        {
+                            input[0, 0, y, x] = pixelSpan[x].B;
+                            input[0, 1, y, x] = pixelSpan[x].G;
+                            input[0, 2, y, x] = pixelSpan[x].R;
+                        }
+                        else
+                        {
+                            input[0, 0, y, x] = pixelSpan[x].R;
+                            input[0, 1, y, x] = pixelSpan[x].G;
+                            input[0, 2, y, x] = pixelSpan[x].B;
+                        }
+
+                        if (!isRange255)
+                        {
+                            input[0, 0, y, x] = input[0, 0, y, x] / 255;
+                            input[0, 1, y, x] = input[0, 1, y, x] / 255;
+                            input[0, 2, y, x] = input[0, 2, y, x] / 255;
+                        }
+                    }
+                }
+            });
+
+            var outStream = new MemoryStream();
+            image.Save(outStream, new PngEncoder());
+            pixelBytes = outStream.ToArray();
+        }
+        return (input, pixelBytes);
     }
 }
