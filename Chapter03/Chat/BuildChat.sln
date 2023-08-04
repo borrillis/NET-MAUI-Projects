@@ -1,10 +1,9 @@
-﻿
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.106
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildChat.Android", "BuildChat\BuildChat.Android\BuildChat.Android.csproj", "{337DF575-D242-41D3-ABB9-011457C950A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildChat.Android", "BuildChat\BuildChat.Android\BuildChat.Android.csproj", "{337DF575-D242-41D3-ABB9-011457C950A5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildChat.iOS", "BuildChat\BuildChat.iOS\BuildChat.iOS.csproj", "{302DEBF1-68D3-45A7-9407-CD7D7B887D7C}"
 EndProject
