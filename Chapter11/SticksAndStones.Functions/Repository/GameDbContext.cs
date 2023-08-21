@@ -14,14 +14,16 @@ internal class GameDbContext : DbContext
     {
         modelBuilder.Entity<Player>()
             .HasKey(p => p.Id);
+        modelBuilder.Entity<Player>()
+            .HasOne(p => p.Game);
 
         modelBuilder.Entity<Game>()
             .HasKey(g => g.Id);
         modelBuilder.Entity<Game>()
-            .HasOne(g => g.PlayerOne).WithOne(p => p.Game);
+            .HasOne(g => g.PlayerOne);
         modelBuilder.Entity<Game>()
-            .HasOne(e => e.PlayerTwo).WithOne(p => p.Game);
+            .HasOne(e => e.PlayerTwo);
         modelBuilder.Entity<Game>()
-            .HasOne(e => e.NextPlayer).WithOne(p => p.Game);
+            .HasOne(e => e.NextPlayer);
     }
 }
