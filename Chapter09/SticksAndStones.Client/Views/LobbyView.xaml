@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:SticksAndStones.Models;assembly=SticksAndStones.Messages"
+             xmlns:viewModels="clr-namespace:SticksAndStones.ViewModels"
+             xmlns:controls="clr-namespace:SticksAndStones.Controls"
+             x:DataType="viewModels:LobbyViewModel"
+             x:Class="SticksAndStones.Views.LobbyView">
+
+    <ContentPage.Resources>
+        <ContentView x:Key="BasicEmptyView">
+            <StackLayout>
+                <Label Text="No players available"
+                       Margin="10,25,10,10"
+                       FontAttributes="Bold"
+                       FontSize="18"
+                       HorizontalOptions="Fill"
+                       HorizontalTextAlignment="Center" />
+            </StackLayout>
+        </ContentView>
+    </ContentPage.Resources>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Disconnect" Command="{Binding DisconnectCommand}"/>
+    </ContentPage.ToolbarItems>
+
+    <RefreshView IsRefreshing="{Binding IsRefreshing}" Command="{Binding RefreshCommand}">
+        <VerticalStackLayout Padding="5">
+            <!-- Have to use a StaticResource for EmptyView due to https://github.com/dotnet/maui/issues/7262 -->
+            <CollectionView ItemsSource="{Binding Players}" Margin="5,5,5,0" EmptyView="{StaticResource BasicEmptyView}"
+                            SelectionMode="None" >
+                <CollectionView.Header>Looking for an opponent</CollectionView.Header>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="{x:Type viewModels:PlayerViewModel}">
+                        <ContentView>
+                            <Border StrokeShape="RoundRectangle 10,10,10,10" BackgroundColor="AntiqueWhite" Padding="5,5,5,5" Margin="5,5,5,5">
+                                <HorizontalStackLayout>
+                                    <Image BackgroundColor="LightGrey" HeightRequest="64" WidthRequest="64" Source="{Binding AvatarUrl}" />
+                                    <VerticalStackLayout>
+                                        <Label Text="{Binding Name}" HorizontalTextAlignment="Start" FontSize="Title" BackgroundColor="AntiqueWhite" />
+                                        <Label Text="{Binding Status}" HorizontalTextAlignment="Start" FontSize="Subtitle" BackgroundColor="AntiqueWhite"/>
+                                    </VerticalStackLayout>
+                                    <!-- controls:ActivityButton IsRunning="{Binding IsChallenging}" Text="Challenge" LoadingText="Challenging..." BackgroundColor="#e8bc65" Command="{Binding ChallengeCommand}" IsVisible="{Binding CanChallenge}"/-->
+                                    <Button Text="Challenge" BackgroundColor="#e8bc65" Command="{Binding ChallengeCommand}" CommandParameter="{Binding .}" IsVisible="{Binding CanChallenge}" />
+                                </HorizontalStackLayout>
+                            </Border>
+                        </ContentView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </RefreshView>
+</ContentPage>

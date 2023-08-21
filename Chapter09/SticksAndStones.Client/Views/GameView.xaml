@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:SticksAndStones.Models"
+             xmlns:viewModels="clr-namespace:SticksAndStones.ViewModels"
+             x:Class="SticksAndStones.Views.GameView"
+             Title="{Binding Title}">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Play" Command="{Binding PlayCommand}" />
+    </ContentPage.ToolbarItems>
+    <ContentView>
+        <Grid BackgroundColor="AntiqueWhite" x:DataType="viewModels:GameViewModel">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="5*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="5*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="5*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Grid.Column="1" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="1"/>
+            </Border>
+            <Border Grid.Row="0" Grid.Column="3" BackgroundColor="SaddleBrown">
+                <Image Source="stick" />
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="2" IsVisible="false"/>
+            </Border>
+            <Border Grid.Row="0" Grid.Column="5" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="3"/>
+            </Border>
+
+            <Border Grid.Row="1" Grid.Column="0" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="4"/>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="1" BackgroundColor="Silver"/>
+            <Border Grid.Row="1" Grid.Column="2" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="5"/>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="3" BackgroundColor="Silver"/>
+            <Border Grid.Row="1" Grid.Column="4" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="6"/>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="5" BackgroundColor="Silver"/>
+            <Border Grid.Row="1" Grid.Column="6" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="7"/>
+            </Border>
+
+            <Border Grid.Row="2" Grid.Column="1" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="8"/>
+            </Border>
+            <Border Grid.Row="2" Grid.Column="3" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="9"/>
+            </Border>
+            <Border Grid.Row="2" Grid.Column="5" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="10"/>
+            </Border>
+
+            <Border Grid.Row="3" Grid.Column="0" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="11"/>
+            </Border>
+            <Border Grid.Row="3" Grid.Column="1" BackgroundColor="Silver"/>
+            <Border Grid.Row="3" Grid.Column="2" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="12"/>
+            </Border>
+            <Border Grid.Row="3" Grid.Column="3" BackgroundColor="Silver"/>
+            <Border Grid.Row="3" Grid.Column="4" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="13"/>
+            </Border>
+            <Border Grid.Row="3" Grid.Column="5" BackgroundColor="Silver"/>
+            <Border Grid.Row="3" Grid.Column="6" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="14"/>
+            </Border>
+
+            <Border Grid.Row="4" Grid.Column="1" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="15"/>
+            </Border>
+            <Border Grid.Row="4" Grid.Column="3" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="16"/>
+            </Border>
+            <Border Grid.Row="4" Grid.Column="5" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="17"/>
+            </Border>
+
+            <Border Grid.Row="5" Grid.Column="0" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="18"/>
+            </Border>
+            <Border Grid.Row="5" Grid.Column="1" BackgroundColor="Silver"/>
+            <Border Grid.Row="5" Grid.Column="2" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="19"/>
+            </Border>
+            <Border Grid.Row="5" Grid.Column="3" BackgroundColor="Silver"/>
+            <Border Grid.Row="5" Grid.Column="4" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="20"/>
+            </Border>
+            <Border Grid.Row="5" Grid.Column="5" BackgroundColor="Silver"/>
+            <Border Grid.Row="5" Grid.Column="6" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="21"/>
+            </Border>
+
+            <Border Grid.Row="6" Grid.Column="1" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="22"/>
+            </Border>
+            <Border Grid.Row="6" Grid.Column="3" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="23"/>
+            </Border>
+            <Border Grid.Row="6" Grid.Column="5" BackgroundColor="SaddleBrown">
+                <ImageButton Command="{Binding SelectStickCommand}" CommandParameter="24"/>
+            </Border>
+        </Grid>
+    </ContentView>
+</ContentPage>
