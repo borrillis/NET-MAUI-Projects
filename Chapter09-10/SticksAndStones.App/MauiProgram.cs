@@ -20,6 +20,7 @@ namespace SticksAndStones.App
 #if DEBUG
 		builder.Logging.AddDebug();
 #endif
+            builder.Services.AddSingleton<Services.Settings>();
 
             return builder.Build();
         }
