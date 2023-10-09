@@ -18,9 +18,15 @@ namespace SticksAndStones.App
                 .UseMauiCommunityToolkit();
 
 #if DEBUG
-		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
+
+            builder.Services.AddLogging(configure =>
+            {
+                configure.AddDebug();
+            });
 #endif
             builder.Services.AddSingleton<Services.Settings>();
+            builder.Services.AddSingleton<Services.ServiceConnection>();
 
             return builder.Build();
         }
