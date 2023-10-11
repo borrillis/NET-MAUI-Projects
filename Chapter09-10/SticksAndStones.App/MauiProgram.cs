@@ -28,6 +28,8 @@ namespace SticksAndStones.App
             builder.Services.AddSingleton<Services.Settings>();
             builder.Services.AddSingleton<Services.ServiceConnection>();
 
+            builder.Services.AddSingleton<Services.GameService>();
+
             return builder.Build();
         }
     }
