@@ -20,6 +20,8 @@ public partial class PlayerViewModel: ObservableObject
 
     public string GamerTag => playerModel.GamerTag;
 
+    public string EmailAddress => playerModel.EmailAddress;
+
     public bool IsInMatch => !(playerModel.MatchId == Guid.Empty);
 
     public string Status => IsInMatch switch

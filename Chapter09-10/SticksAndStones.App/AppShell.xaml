@@ -11,4 +11,8 @@
         <ShellContent ContentTemplate="{DataTemplate views:ConnectView}" />
     </ShellItem>
 
+    <ShellItem Route="Lobby">
+        <ShellContent ContentTemplate="{DataTemplate views:LobbyView}" />
+    </ShellItem>
+
 </Shell>
