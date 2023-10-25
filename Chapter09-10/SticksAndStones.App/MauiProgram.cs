@@ -31,6 +31,7 @@ namespace SticksAndStones.App
             builder.Services.AddSingleton<Services.GameService>();
 
             builder.Services.AddTransient<ViewModels.ConnectViewModel>();
+            builder.Services.AddTransient<ViewModels.LobbyViewModel>();
 
             builder.Services.AddTransient<Views.ConnectView>();
 
