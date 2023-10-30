@@ -32,6 +32,7 @@ namespace SticksAndStones.App
 
             builder.Services.AddTransient<ViewModels.ConnectViewModel>();
             builder.Services.AddTransient<ViewModels.LobbyViewModel>();
+            builder.Services.AddTransient<ViewModels.MatchViewModel>();
 
             builder.Services.AddTransient<Views.ConnectView>();
             builder.Services.AddTransient<Views.LobbyView>();
