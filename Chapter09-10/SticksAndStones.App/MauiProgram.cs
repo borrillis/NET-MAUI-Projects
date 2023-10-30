@@ -14,6 +14,7 @@ namespace SticksAndStones.App
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                    fonts.AddFont("FontAwesome.otf", "FontAwesome");
                 })
                 .UseMauiCommunityToolkit();
 
@@ -36,6 +37,7 @@ namespace SticksAndStones.App
 
             builder.Services.AddTransient<Views.ConnectView>();
             builder.Services.AddTransient<Views.LobbyView>();
+            builder.Services.AddTransient<Views.MatchView>();
 
             return builder.Build();
         }

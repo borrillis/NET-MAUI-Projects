@@ -15,4 +15,7 @@
         <ShellContent ContentTemplate="{DataTemplate views:LobbyView}" />
     </ShellItem>
 
+    <ShellItem Route="Match">
+        <ShellContent ContentTemplate="{DataTemplate views:MatchView}" />
+    </ShellItem>
 </Shell>
