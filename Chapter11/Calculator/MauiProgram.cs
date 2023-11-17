@@ -1,5 +1,4 @@
-﻿using Calculator.Data;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace Calculator
 {
@@ -21,8 +20,6 @@ namespace Calculator
 		builder.Services.AddBlazorWebViewDeveloperTools();
 		builder.Logging.AddDebug();
 #endif
-
-            builder.Services.AddSingleton<WeatherForecastService>();
 
             return builder.Build();
         }
