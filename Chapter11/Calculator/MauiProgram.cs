@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+﻿using Calculator.Services;
 
 namespace Calculator
 {
@@ -20,6 +21,7 @@ namespace Calculator
 		builder.Services.AddBlazorWebViewDeveloperTools();
 		builder.Logging.AddDebug();
 #endif
+            builder.Services.AddSingleton<Compute>();
 
             return builder.Build();
         }

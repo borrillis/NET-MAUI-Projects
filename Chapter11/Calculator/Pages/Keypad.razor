@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject Compute compute
 
 <div class="keypad">
     <div class="keypad-body">
@@ -103,6 +104,8 @@
     void EvaluateExpression()
     {
         var expression = inputDisplay;
+        var result = compute.Evaluate(inputDisplay.Replace('X', '*'));
+        inputDisplay = result;
         clearInputBeforeAppend = true;
     }
 
