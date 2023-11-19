@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
 ﻿using Calculator.Services;
+using Calculator.ViewModels;
+using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.Logging;
 
 namespace Calculator
 {
@@ -22,6 +24,11 @@ namespace Calculator
 		builder.Logging.AddDebug();
 #endif
             builder.Services.AddSingleton<Compute>();
+            builder.Services.AddSingleton<Calculations>();
+            builder.Services.AddSingleton<MainPage>();
+            builder.Services.AddSingleton<MainPageViewModel>();
+
+            builder.Services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
 
             return builder.Build();
         }

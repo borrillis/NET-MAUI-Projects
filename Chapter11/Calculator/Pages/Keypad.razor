@@ -1,5 +1,7 @@
 ﻿@page "/"
 @inject Compute compute
+@inject Calculations calculations
+@inject IMessenger messagingCenter
 
 <div class="keypad">
     <div class="keypad-body">
@@ -99,14 +101,29 @@
     void ClearAll()
     {
         ClearInput();
+        calculations.Clear();
     }
 
     void EvaluateExpression()
     {
         var expression = inputDisplay;
         var result = compute.Evaluate(inputDisplay.Replace('X', '*'));
+        calculations.Add(new(expression, result));
         inputDisplay = result;
         clearInputBeforeAppend = true;
     }
 
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            messagingCenter.Register<Calculation>(this, (sender, er) =>
+            {
+                inputDisplay = er.Expression;
+                clearInputBeforeAppend = false;
+                StateHasChanged();
+            });
+        }
+        return base.OnAfterRenderAsync(firstRender);
+    }
 }

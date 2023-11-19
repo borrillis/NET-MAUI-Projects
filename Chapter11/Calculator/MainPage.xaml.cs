@@ -1,10 +1,12 @@
-﻿namespace Calculator
+﻿using Calculator.ViewModels;
+
+namespace Calculator;
+
+public partial class MainPage : ContentPage
 {
-    public partial class MainPage : ContentPage
+    public MainPage(MainPageViewModel vm)
     {
-        public MainPage()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+        BindingContext = vm;
     }
 }
