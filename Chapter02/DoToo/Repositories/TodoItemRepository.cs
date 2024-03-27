@@ -48,7 +48,7 @@ public class TodoItemRepository : ITodoItemRepository
             return;
         }
 
-        var documentPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        var documentPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         var databasePath = Path.Combine(documentPath, "TodoItems.db");
 
         connection = new SQLiteAsyncConnection(databasePath); 
