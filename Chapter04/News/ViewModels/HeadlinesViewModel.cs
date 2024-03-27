@@ -1,26 +1,20 @@
-﻿namespace News.ViewModels;
-
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using News.Models;
 using News.Services;
 
-public partial class HeadlinesViewModel : ViewModel
+namespace News.ViewModels;
+
+public partial class HeadlinesViewModel(INewsService newsService, INavigate navigation) : ViewModel(navigation)
 {
-    private readonly INewsService newsService;
+    private readonly INewsService newsService = newsService;
 
     [ObservableProperty]
-    private NewsResult currentNews;
+    private NewsResult? currentNews;
 
-    public HeadlinesViewModel(INewsService newsService, INavigate navigation) : base (navigation)
-    {
-        this.newsService = newsService;
-    }
-
-    public async Task Initialize(string scope) => await Initialize(scope.ToLower() switch
+    public async Task Initialize(string? scope) => await Initialize(scope?.ToLower() switch
     {
         "local" => NewsScope.Local,
         "global" => NewsScope.Global,
@@ -36,8 +30,10 @@ public partial class HeadlinesViewModel : ViewModel
     [RelayCommand]
     public async Task ItemSelected(object selectedItem)
     {
-        var selectedArticle = selectedItem as Article;
-        var url = HttpUtility.UrlEncode(selectedArticle.Url);
-        await Navigation.NavigateTo($"articleview?url={url}");
+        if (selectedItem is Article selectedArticle)
+        {
+            var url = HttpUtility.UrlEncode(selectedArticle.Url);
+            await Navigation.NavigateTo($"articleview?url={url}");
+        }
     }
 }

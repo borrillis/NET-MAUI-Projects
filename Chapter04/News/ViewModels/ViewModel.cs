@@ -2,8 +2,7 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-[ObservableObject]
-public abstract partial class ViewModel
+public abstract partial class ViewModel : ObservableObject
 {
     public INavigate Navigation { get; init; }
 

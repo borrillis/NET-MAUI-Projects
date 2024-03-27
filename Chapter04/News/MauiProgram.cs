@@ -4,9 +4,9 @@ namespace News;
 
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp()
-	{
-		var builder = MauiApp.CreateBuilder();
+    public static MauiApp CreateMauiApp()
+    {
+        var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
             .ConfigureFonts(fonts =>
@@ -32,7 +32,7 @@ public static class MauiProgram
 
         // ViewModels
         mauiAppBuilder.Services.AddTransient<ViewModels.HeadlinesViewModel>();
-        
+
         //Views
         mauiAppBuilder.Services.AddTransient<Views.AboutView>();
         mauiAppBuilder.Services.AddTransient<Views.ArticleView>();
