@@ -2,7 +2,10 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:behaviors="clr-namespace:Weather.Behaviors" 
+             xmlns:viewModels="clr-namespace:Weather.ViewModels"
+             xmlns:models="clr-namespace:Weather.Models"
              x:Class="Weather.Views.Desktop.MainView"
+             x:DataType="viewModels:MainViewModel"
              Title="{Binding City}">
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Refresh" IconImageSource="refresh.png" Command="{Binding RefreshCommand}" />
@@ -16,7 +19,7 @@
         <ScrollView BackgroundColor="Transparent">
             <FlexLayout BindableLayout.ItemsSource="{Binding Days}" Direction="Column" Wrap="NoWrap" Grow="0.0" Shrink="0.0">
                 <BindableLayout.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="models:ForecastGroup">
                         <StackLayout>
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup>
@@ -41,7 +44,7 @@
                                     </FlexLayout.Behaviors>
 
                                     <BindableLayout.ItemTemplate>
-                                        <DataTemplate>
+                                        <DataTemplate x:DataType="models:ForecastItem">
                                             <StackLayout Margin="10" Padding="20" WidthRequest="150" BackgroundColor="#99FFFFFF">
                                                 <Label FontSize="16" FontAttributes="Bold" Text="{Binding TimeAsString}" HorizontalOptions="Center" />
                                                 <Image WidthRequest="100" HeightRequest="100" Aspect="AspectFit" HorizontalOptions="Center" Source="{Binding Icon}">

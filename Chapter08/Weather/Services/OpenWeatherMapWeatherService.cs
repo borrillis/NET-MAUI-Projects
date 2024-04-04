@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using Weather.Models;
 using System.Text.Json;
 
@@ -16,16 +15,19 @@ public class OpenWeatherMapWeatherService : IWeatherService
         var httpClient = new HttpClient();
         var result = await httpClient.GetStringAsync(uri);
         var data = JsonSerializer.Deserialize<WeatherData>(result);
+        if (data is null)
+            return new Forecast();
+
         var forecast = new Forecast()
         {
-            City = data.city.name,
-            Items = data.list.Select(x => new ForecastItem()
+            City = data.city?.name,
+            Items = data.list?.Select(x => new ForecastItem()
             {
                 DateTime = ToDateTime(x.dt),
-                Temperature = x.main.temp,
-                WindSpeed = x.wind.speed,
-                Description = x.weather.First().description,
-                Icon = $"http://openweathermap.org/img/w/{x.weather.First().icon}.png"
+                Temperature = x.main?.temp ?? 0,
+                WindSpeed = x.wind?.speed ?? 0,
+                Description = x.weather?.First().description,
+                Icon = $"https://openweathermap.org/img/w/{x.weather?.First().icon}.png"
             }).ToList()
         };
         return forecast;
@@ -33,7 +35,7 @@ public class OpenWeatherMapWeatherService : IWeatherService
 
     private DateTime ToDateTime(double unixTimeStamp)
     {
-        DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+        DateTime dateTime = new(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
         return dateTime;
     }

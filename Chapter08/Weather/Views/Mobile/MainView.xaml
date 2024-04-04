@@ -1,21 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:Weather.ViewModels"
+             xmlns:models="clr-namespace:Weather.Models"
              x:Class="Weather.Views.Mobile.MainView"
+             x:DataType="viewModels:MainViewModel"
              Title="{Binding City}">
 
-    <RefreshView Command="{Binding Refresh}" IsRefreshing="{Binding IsRefreshing}">
+    <RefreshView Command="{Binding RefreshCommand}" IsRefreshing="{Binding IsRefreshing}">
 
         <CollectionView ItemsSource="{Binding Days}" IsGrouped="True" BackgroundColor="Transparent">
             <CollectionView.GroupHeaderTemplate>
-                <DataTemplate>
+                <DataTemplate x:DataType="models:ForecastGroup">
                     <ContentView Padding="15,5" BackgroundColor="#9F5010">
                         <Label FontAttributes="Bold" TextColor="White" Text="{Binding DateAsString}" VerticalOptions="Center"/>
                     </ContentView>
                 </DataTemplate>
             </CollectionView.GroupHeaderTemplate>
             <CollectionView.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate x:DataType="models:ForecastItem">
                     <Grid Padding="15,10" ColumnSpacing="10" BackgroundColor="#99FFFFFF">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />

@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace Weather.Models;
 
 public class ForecastGroup : List<ForecastItem>

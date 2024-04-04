@@ -1,4 +1,4 @@
-﻿using System;
+﻿
 namespace Weather;
 
 internal partial class AppPermissions
@@ -14,6 +14,9 @@ internal partial class AppPermissions
         PermissionStatus status = await Permissions.CheckStatusAsync<AppPermission>();
 
         if (status == PermissionStatus.Granted)
+            return status;
+
+        if (App.Current is null || App.Current.MainPage is null)
             return status;
 
         if (status == PermissionStatus.Denied && DeviceInfo.Platform == DevicePlatform.iOS)

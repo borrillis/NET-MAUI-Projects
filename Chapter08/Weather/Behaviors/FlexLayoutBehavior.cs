@@ -4,9 +4,9 @@ namespace Weather.Behaviors;
 
 public class FlexLayoutBehavior : Behavior<FlexLayout>
 {
-    private FlexLayout view;
+    private FlexLayout? view;
 
-    private void SetState(VisualElement view, string state)
+    private void SetState(VisualElement? view, string state)
     {
         VisualStateManager.GoToState(view, state);
         if (view is Layout layout)
@@ -22,7 +22,9 @@ public class FlexLayoutBehavior : Behavior<FlexLayout>
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            var page = Application.Current.MainPage;
+            var page = Application.Current?.MainPage;
+            if (page is null)
+                return;
 
             if (page.Width > page.Height)
             {
@@ -39,10 +41,11 @@ public class FlexLayoutBehavior : Behavior<FlexLayout>
         this.view = view;
         base.OnAttachedTo(view);
         UpdateState();
-        Application.Current.MainPage.SizeChanged += MainPage_SizeChanged;
+        if (Application.Current?.MainPage is not null)
+            Application.Current.MainPage.SizeChanged += MainPage_SizeChanged;
     }
 
-    void MainPage_SizeChanged(object sender, EventArgs e)
+    void MainPage_SizeChanged(object? sender, EventArgs e)
     {
         UpdateState();
     }
@@ -50,7 +53,8 @@ public class FlexLayoutBehavior : Behavior<FlexLayout>
     protected override void OnDetachingFrom(FlexLayout view)
     {
         base.OnDetachingFrom(view);
-        Application.Current.MainPage.SizeChanged -= MainPage_SizeChanged;
+        if (Application.Current?.MainPage is not null)
+            Application.Current.MainPage.SizeChanged -= MainPage_SizeChanged;
         this.view = null;
     }
 

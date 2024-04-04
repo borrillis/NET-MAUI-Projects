@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Weather.Models;
+﻿using Weather.Models;
 
 namespace Weather.Services;
 
