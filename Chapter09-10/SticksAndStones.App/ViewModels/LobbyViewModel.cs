@@ -27,16 +27,16 @@ public partial class LobbyViewModel : ViewModelBase
     {
         if (e.Action == NotifyCollectionChangedAction.Add)
         {
-            foreach (var player in e.NewItems.Cast<Player>())
+            foreach (var player in e.NewItems?.Cast<Player>() ?? [])
             {
                 Players.Add(new PlayerViewModel(player, gameService));
             }
         }
         else if (e.Action == NotifyCollectionChangedAction.Remove)
         {
-            foreach (var player in e.OldItems.Cast<Player>())
+            foreach (var player in e.OldItems?.Cast<Player>() ?? [])
             {
-                var toRemove = Players.FirstOrDefault(p => p.Id == player.Id);
+                var toRemove = Players.First(p => p.Id == player.Id);
                 Players.Remove(toRemove);
             }
         }
@@ -58,7 +58,7 @@ public partial class LobbyViewModel : ViewModelBase
         gameService.Players.CollectionChanged += OnPlayersCollectionChanged;
 
         // If the player has an in progress match, take them to it.
-        if (gameService.CurrentPlayer?.MatchId != Guid.Empty)
+        if (gameService.CurrentPlayer.MatchId != Guid.Empty)
         {
             MainThread.InvokeOnMainThreadAsync(async () =>
             {

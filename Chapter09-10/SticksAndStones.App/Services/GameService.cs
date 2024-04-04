@@ -15,7 +15,7 @@ public sealed class GameService : IDisposable
 
     public Player CurrentPlayer { get; private set; } = new Player() { Id = Guid.Empty, MatchId = Guid.Empty };
 
-    public ObservableCollection<Player> Players { get; } = new();
+    public ObservableCollection<Player> Players { get; } = [];
 
     public bool IsConnected { get; private set; }
 
@@ -47,12 +47,12 @@ public sealed class GameService : IDisposable
                 CurrentPlayer = response.Player;
                 IsConnected = true;
 
-                (await service.Hub).On<PlayerUpdatedEventArgs>(Constants.Events.PlayerUpdated, PlayerStatusChangedHandler);
-                (await service.Hub).On<ChallengeEventArgs>(Constants.Events.Challenge, (args) => WeakReferenceMessenger.Default.Send(new ChallengeRecieved(args.Id, args.Challenger)));
-                (await service.Hub).On<MatchStartedEventArgs>(Constants.Events.MatchStarted, (args) => WeakReferenceMessenger.Default.Send(new MatchStarted(args.Match)));
-                (await service.Hub).On<MatchUpdatedEventArgs>(Constants.Events.MatchUpdated, (args) => WeakReferenceMessenger.Default.Send(new MatchUpdated(args.Match)));
+                (await service.Hub!).On<PlayerUpdatedEventArgs>(Constants.Events.PlayerUpdated, PlayerStatusChangedHandler);
+                (await service.Hub!).On<ChallengeEventArgs>(Constants.Events.Challenge, (args) => WeakReferenceMessenger.Default.Send(new ChallengeRecieved(args.Id, args.Challenger)));
+                (await service.Hub!).On<MatchStartedEventArgs>(Constants.Events.MatchStarted, (args) => WeakReferenceMessenger.Default.Send(new MatchStarted(args.Match)));
+                (await service.Hub!).On<MatchUpdatedEventArgs>(Constants.Events.MatchUpdated, (args) => WeakReferenceMessenger.Default.Send(new MatchUpdated(args.Match)));
 
-                (await service.Hub).Reconnected += (s) => { return RefreshPlayerList(); };
+                (await service.Hub!).Reconnected += (s) => { return RefreshPlayerList(); };
             }
             else
             {
@@ -124,7 +124,7 @@ public sealed class GameService : IDisposable
         }
     }
 
-    public async Task<(Match, string)> EndTurn(Guid matchId, int position)
+    public async Task<(Match?, string?)> EndTurn(Guid matchId, int position)
     {
         await semaphoreSlim.WaitAsync();
         try
@@ -146,7 +146,7 @@ public sealed class GameService : IDisposable
     {
         if (playerId == CurrentPlayer.Id)
             return CurrentPlayer;
-        return (from p in Players where p.Id == playerId select p).FirstOrDefault();
+        return (from p in Players where p.Id == playerId select p).First();
     }
 
     public async Task<Match> GetMatchById(Guid matchId)

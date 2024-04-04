@@ -67,7 +67,7 @@ public partial class ConnectViewModel : ViewModelBase
             IsActive = false;
 
             // If the player has an in progress match, take them to it.
-            if (gameService.CurrentPlayer?.MatchId != Guid.Empty)
+            if (gameService.CurrentPlayer.MatchId != Guid.Empty)
             {
                 await Shell.Current.GoToAsync($"///Match", new Dictionary<string, object>() { { "MatchId", gameService.CurrentPlayer.MatchId } });
             }

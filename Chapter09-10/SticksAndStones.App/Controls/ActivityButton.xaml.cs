@@ -70,7 +70,9 @@ public partial class ActivityButton : Frame
         nameof(FontSize),
         typeof(double),
         typeof(ActivityButton),
+#pragma warning disable CS0612 // 'member' is obsolete
         Device.GetNamedSize(NamedSize.Small, typeof(Label)),
+#pragma warning restore CS0612 // 'member' is obsolete
         BindingMode.TwoWay);
 
     public double FontSize

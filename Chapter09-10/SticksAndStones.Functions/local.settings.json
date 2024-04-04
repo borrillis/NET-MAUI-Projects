@@ -1,8 +1,8 @@
 {
   "IsEncrypted": false,
   "Values": {
-    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
-    "AzureSignalRConnectionString": "{YourSignalRConnectingStringHere}"
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "AzureSignalRConnectionString": "Endpoint=https://sticksandstones.service.signalr.net;AccessKey=/sIkqikE2dslv7lLOHkFQtZZ3jZZ3Gm6VQL9i+zCkss=;Version=1.0;"
   }
 }

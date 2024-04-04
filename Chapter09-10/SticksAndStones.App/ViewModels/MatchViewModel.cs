@@ -12,10 +12,10 @@ public partial class MatchViewModel : ViewModelBase, IQueryAttributable
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsCurrentPlayersTurn))]
-    private Match match;
+    private Match? match;
 
     [ObservableProperty]
-    private MatchPlayerViewModel[] players;
+    private MatchPlayerViewModel[] players = [];
 
     public bool IsCurrentPlayersTurn => gameService.CurrentPlayer.Id == (Match?.NextPlayerId ?? Guid.Empty);
 
@@ -30,7 +30,7 @@ public partial class MatchViewModel : ViewModelBase, IQueryAttributable
         MainThread.InvokeOnMainThreadAsync(async () =>
         {
 
-            Match match = null;
+            Match? match = null;
             if (query.ContainsKey(Constants.ArgumentNames.Match))
             {
                 match = query[Constants.ArgumentNames.Match] as Match;
@@ -48,14 +48,14 @@ public partial class MatchViewModel : ViewModelBase, IQueryAttributable
         });
     }
 
-    private void LoadMatch(Match match)
+    private void LoadMatch(Match? match)
     {
         if (match is null) return;
 
-        Players = new[] {
+        Players = [
             new MatchPlayerViewModel(gameService.GetPlayerById(match.PlayerOneId), match),
             new MatchPlayerViewModel(gameService.GetPlayerById(match.PlayerTwoId), match)
-         };
+         ];
 
         this.Match = match;
     }
@@ -93,7 +93,7 @@ public partial class MatchViewModel : ViewModelBase, IQueryAttributable
         }
         if (await Shell.Current.CurrentPage.DisplayAlert("Make a move", "Are you sure this is the move you want, this can't be undone.", "Yes", "No"))
         {
-            var (newMatch, error) = await gameService.EndTurn(Match.Id, lastSelectedStick);
+            var (newMatch, error) = await gameService.EndTurn(Match!.Id, lastSelectedStick);
             if (error is not null)
             {
                 await Shell.Current.CurrentPage.DisplayAlert("Error in move", error, "Ok");
@@ -111,7 +111,7 @@ public partial class MatchViewModel : ViewModelBase, IQueryAttributable
             if (await Shell.Current.CurrentPage.DisplayAlert("Undo your move", "Are you sure you don't want to play this move?", "Yes", "No"))
             {
                 OnPropertyChanging(nameof(Match));
-                Match.Sticks[lastSelectedStick] = 0;
+                Match!.Sticks[lastSelectedStick] = 0;
                 OnPropertyChanged(nameof(Match));
                 lastSelectedStick = -1;
                 return;
@@ -124,7 +124,7 @@ public partial class MatchViewModel : ViewModelBase, IQueryAttributable
     {
         var returnToLobby = true;
 
-        if (!Match.Completed)
+        if (!Match!.Completed)
         {
             returnToLobby = await Shell.Current.CurrentPage.DisplayAlert("W A I T", "Returning to the Lobby will forfeit your match, are you sure you want to do that?", "Yes", "No");
         }
@@ -147,7 +147,7 @@ public partial class MatchViewModel : ViewModelBase, IQueryAttributable
     void OnMatchUpdated(object r, Messages.MatchUpdated m)
     {
         LoadMatch(m.Value);
-        if (Match.WinnerId != Guid.Empty && Match.Completed == true)
+        if (Match!.WinnerId != Guid.Empty && Match.Completed == true)
         {
             MainThread.InvokeOnMainThreadAsync(async () =>
             {

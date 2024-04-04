@@ -1,8 +1,5 @@
 ﻿using SticksAndStones.Models;
-using System;
 using System.Collections.Concurrent;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SticksAndStones.Handlers;
 
@@ -16,18 +13,14 @@ public class ChallengeHandler : IDisposable
     private readonly ConcurrentDictionary<Guid, ChallengeRecord> handlers = new();
 
     public ChallengeHandler() : this(
-        completeAcksOnTimeout: true,
         ackThreshold: TimeSpan.FromSeconds(30),
         ackInterval: TimeSpan.FromSeconds(1))
     {
     }
 
-    public ChallengeHandler(bool completeAcksOnTimeout, TimeSpan ackThreshold, TimeSpan ackInterval)
+    public ChallengeHandler(TimeSpan ackThreshold, TimeSpan ackInterval)
     {
-        if (completeAcksOnTimeout)
-        {
-            timer = new Timer(_ => CheckAcks(), state: null, dueTime: ackInterval, period: ackInterval);
-        }
+        timer = new Timer(_ => CheckAcks(), state: null, dueTime: ackInterval, period: ackInterval);
 
         this.ackThreshold = ackThreshold;
     }

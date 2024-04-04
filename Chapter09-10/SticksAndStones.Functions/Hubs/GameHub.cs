@@ -1,71 +1,65 @@
+using Azure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.SignalRService;
 using Microsoft.Azure.SignalR.Management;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Extensions.SignalRService;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SticksAndStones.Handlers;
 using SticksAndStones.Messages;
 using SticksAndStones.Models;
 using SticksAndStones.Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace SticksAndStones.Hubs;
 
-public class GameHub : ServerlessHub
+public interface IGameHub
+{
+    Task PlayerUpdated(PlayerUpdatedEventArgs playerUpdatedEvent);
+    Task Challenge(ChallengeEventArgs challengeEvent);
+    Task MatchStarted(MatchStartedEventArgs matchStartedEvent);
+    Task MatchUpdated(MatchUpdatedEventArgs matchUpdatedEvent);
+}
+
+
+public class GameHub(IServiceProvider serviceProvider, ILogger<GameHub> logger, IDbContextFactory<GameDbContext> contextFactory, ChallengeHandler challengeHandler) : ServerlessHub<IGameHub>(serviceProvider)
 {
     private readonly JsonSerializerOptions jsonOptions = new(JsonSerializerDefaults.Web);
 
-    private readonly IDbContextFactory<GameDbContext> contextFactory;
-    private readonly ChallengeHandler challengeHandler;
+    readonly (int stone, int[] sticks)[][] stickToStoneMap = [
+        /* 1 */ [(1, [4, 5, 8]), (0, [0, 0, 0])],
+        /* 2 */ [(2, [5, 6, 9]), (0, [0, 0, 0])],
+        /* 3 */ [(3, [6, 7,10]), (0, [0, 0, 0])],
+        /* 4 */ [(1, [1, 5, 8]), (0, [0, 0, 0])],
+        /* 5 */ [(1, [1, 4, 8]), (2, [2, 6, 9])],
+        /* 6 */ [(2, [2, 5, 9]), (3, [3, 7,10])],
+        /* 7 */ [(3, [3, 6,10]), (0, [0, 0, 0])],
+        /* 8 */ [(1, [1, 4, 5]), (4, [11,12,15])],
+        /* 9 */ [(2, [2, 5, 6]), (5, [12,13,16])],
+        /*10 */ [(3, [3, 6, 7]), (6, [13,14,17])],
+        /*11 */ [(4, [8,12,15]), (0, [0, 0, 0])],
+        /*12 */ [(4, [8,11,15]), (5, [9,13,16])],
+        /*13 */ [(5, [9,12,16]), (6, [10,14,17])],
+        /*14 */ [(6, [10,13,17]), (0, [0, 0, 0])],
+        /*15 */ [(4, [8,11,12]), (7, [18,19,22])],
+        /*16 */ [(5, [9,12,13]), (8, [19,20,23])],
+        /*17 */ [(6, [13,14,17]), (9, [20,21,24])],
+        /*18 */ [(7, [15,19,22]), (0, [0, 0, 0])],
+        /*19 */ [(7, [15,18,22]), (8, [16,20,23])],
+        /*20 */ [(8, [16,19,23]), (9, [17,21,24])],
+        /*21 */ [(9, [17,20,24]), (0, [0, 0, 0])],
+        /*22 */ [(7, [15,18,19]), (0, [0, 0, 0])],
+        /*23 */ [(8, [16,19,20]), (0, [0, 0, 0])],
+        /*24 */ [(9, [17,20,21]), (0, [0, 0, 0])],
+    ];
 
-    (int stone, int[] sticks)[][] stickToStoneMap = new (int, int[])[][] {
-        /* 1 */ new (int, int[])[] { (1, new int[] { 4, 5, 8}), (0, new int[] { 0, 0, 0})},
-        /* 2 */ new (int, int[])[] { (2, new int[] { 5, 6, 9}), (0, new int[] { 0, 0, 0})},
-        /* 3 */ new (int, int[])[] { (3, new int[] { 6, 7,10}), (0, new int[] { 0, 0, 0})},
-        /* 4 */ new (int, int[])[] { (1, new int[] { 1, 5, 8}), (0, new int[] { 0, 0, 0})},
-        /* 5 */ new (int, int[])[] { (1, new int[] { 1, 4, 8}), (2, new int[] { 2, 6, 9})},
-        /* 6 */ new (int, int[])[] { (2, new int[] { 2, 5, 9}), (3, new int[] { 3, 7,10})},
-        /* 7 */ new (int, int[])[] { (3, new int[] { 3, 6,10}), (0, new int[] { 0, 0, 0})},
-        /* 8 */ new (int, int[])[] { (1, new int[] { 1, 4, 5}), (4, new int[] {11,12,15})},
-        /* 9 */ new (int, int[])[] { (2, new int[] { 2, 5, 6}), (5, new int[] {12,13,16})},
-        /*10 */ new (int, int[])[] { (3, new int[] { 3, 6, 7}), (6, new int[] {13,14,17})},
-        /*11 */ new (int, int[])[] { (4, new int[] { 8,12,15}), (0, new int[] { 0, 0, 0})},
-        /*12 */ new (int, int[])[] { (4, new int[] { 8,11,15}), (5, new int[] { 9,13,16})},
-        /*13 */ new (int, int[])[] { (5, new int[] { 9,12,16}), (6, new int[] {10,14,17})},
-        /*14 */ new (int, int[])[] { (6, new int[] {10,13,17}), (0, new int[] { 0, 0, 0})},
-        /*15 */ new (int, int[])[] { (4, new int[] { 8,11,12}), (7, new int[] {18,19,22})},
-        /*16 */ new (int, int[])[] { (5, new int[] { 9,12,13}), (8, new int[] {19,20,23})},
-        /*17 */ new (int, int[])[] { (6, new int[] {13,14,17}), (9, new int[] {20,21,24})},
-        /*18 */ new (int, int[])[] { (7, new int[] {15,19,22}), (0, new int[] { 0, 0, 0})},
-        /*19 */ new (int, int[])[] { (7, new int[] {15,18,22}), (8, new int[] {16,20,23})},
-        /*20 */ new (int, int[])[] { (8, new int[] {16,19,23}), (9, new int[] {17,21,24})},
-        /*21 */ new (int, int[])[] { (9, new int[] {17,20,24}), (0, new int[] { 0, 0, 0})},
-        /*22 */ new (int, int[])[] { (7, new int[] {15,18,19}), (0, new int[] { 0, 0, 0})},
-        /*23 */ new (int, int[])[] { (8, new int[] {16,19,20}), (0, new int[] { 0, 0, 0})},
-        /*24 */ new (int, int[])[] { (9, new int[] {17,20,21}), (0, new int[] { 0, 0, 0})},
-            };
-
-    public GameHub(IDbContextFactory<GameDbContext> dbContextFactory, ChallengeHandler handler)
-    {
-        contextFactory = dbContextFactory;
-        challengeHandler = handler;
-    }
-
-    [FunctionName("Connect")]
+    [Function("Connect")]
     public async Task<IActionResult> Connect(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
-        [SignalR(HubName = "GameHub")] IAsyncCollector<SignalRMessage> signalRMessages,
-        ILogger log)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req)
     {
-        log.LogInformation("A new client is requesting connection");
+        logger.LogInformation("A new client is requesting connection");
 
         var result = await JsonSerializer.DeserializeAsync<ConnectRequest>(req.Body, jsonOptions);
         var newPlayer = result.Player;
@@ -73,27 +67,27 @@ public class GameHub : ServerlessHub
         if (newPlayer is null)
         {
             var error = new ArgumentException("No player data.", "Player");
-            log.LogError(error, "Failure to deserialize arguments");
+            logger.LogError(error, "Failure to deserialize arguments");
             return new BadRequestObjectResult(error);
         }
 
         if (string.IsNullOrEmpty(newPlayer.GamerTag))
         {
             var error = new ArgumentException("A GamerTag is required for all players.", "GamerTag");
-            log.LogError(error, "Invalid value for GamerTag");
+            logger.LogError(error, "Invalid value for GamerTag");
             return new BadRequestObjectResult(error);
         }
 
         if (string.IsNullOrEmpty(newPlayer.EmailAddress))
         {
             var error = new ArgumentException("An Email Address is required for all players.", "EmailAddress");
-            log.LogError(error, "Invalid value for EmailAddress");
+            logger.LogError(error, "Invalid value for EmailAddress");
             return new BadRequestObjectResult(error);
         }
         
         using var context = contextFactory.CreateDbContext();
 
-        log.LogInformation("Checking for GamerTag usage");
+        logger.LogInformation("Checking for GamerTag usage");
         var gamerTagInUse = (from p in context.Players 
                              where string.Equals(p.GamerTag, newPlayer.GamerTag, StringComparison.InvariantCultureIgnoreCase) 
                              && !string.Equals(p.EmailAddress, newPlayer.EmailAddress, StringComparison.OrdinalIgnoreCase) 
@@ -101,75 +95,75 @@ public class GameHub : ServerlessHub
         if (gamerTagInUse)
         {
             var error = new ArgumentException($"The GamerTag {newPlayer.GamerTag} is in use, please choose another.", "GamerTag");
-            log.LogError(error, "GamerTag in use.");
+            logger.LogError(error, "GamerTag in use.");
             return new BadRequestObjectResult(error);
         }
 
-        log.LogInformation("Locating Player record.");
+        logger.LogInformation("Locating Player record.");
         var thisPlayer = (from p in context.Players where string.Equals(p.EmailAddress, newPlayer.EmailAddress, StringComparison.OrdinalIgnoreCase) select p).FirstOrDefault();
 
         if (thisPlayer is null)
         {
-            log.LogInformation("Player not found, creating.");
+            logger.LogInformation("Player not found, creating.");
             thisPlayer = newPlayer;
             thisPlayer.Id = Guid.NewGuid();
             context.Add(thisPlayer);
             await context.SaveChangesAsync();
         }
 
-        log.LogInformation("Notifying connected players of new player.");
-        await Clients.All.SendAsync(Constants.Events.PlayerUpdated, new PlayerUpdatedEventArgs(thisPlayer));
+        logger.LogInformation("Notifying connected players of new player.");
+        await Clients.All.PlayerUpdated(new PlayerUpdatedEventArgs(thisPlayer));
 
         // Get the set of available players
-        log.LogInformation("Getting the set of available players.");
+        logger.LogInformation("Getting the set of available players.");
         var players = (from player in context.Players
                        where player.Id != thisPlayer.Id
                        select player).ToList();
 
-        var connectionInfo = await NegotiateAsync(new NegotiationOptions() { UserId = thisPlayer.Id.ToString() });
+        var binaryData = await NegotiateAsync(new NegotiationOptions() { UserId = thisPlayer.Id.ToString() });
+
+        var connectionInfo = binaryData.ToDynamicFromJson();
         
-        log.LogInformation("Creating response.");
+        logger.LogInformation("Creating response.");
         var connectResponse = new ConnectResponse()
         {
             Player = thisPlayer,
             Players = players,
-            ConnectionInfo = new Models.ConnectionInfo { Url = connectionInfo.Url, AccessToken = connectionInfo.AccessToken }
+            ConnectionInfo = new Models.ConnectionInfo { Url = connectionInfo.url, AccessToken = connectionInfo.accessToken }
         };
 
-        log.LogInformation("Sending response.");
+        logger.LogInformation("Sending response.");
         return new OkObjectResult(connectResponse);
     }
 
-    [FunctionName("GetAllPlayers")]
+    [Function("GetAllPlayers")]
     public IActionResult GetAllPlayers(
-    [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Players/GetAll")] HttpRequest req,
-    ILogger log)
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Players/GetAll")] HttpRequest req)
     {
         // Exclude the playerId if provided
         Guid playerId = Guid.Empty;
         if (req.Query.ContainsKey("id"))
         {
-            string id = req.Query["id"];
+            var id = req.Query["id"];
             if (!string.IsNullOrEmpty(id))
             {
-                playerId = new Guid(id);
+                playerId = new Guid(id!);
             }
         }
 
         using var context = contextFactory.CreateDbContext();
 
         // Get the set of available players
-        log.LogInformation("Getting the set of available players.");
+        logger.LogInformation("Getting the set of available players.");
         var players = (from player in context.Players
                        where player.Id != playerId
                        select player).ToList();
         return new OkObjectResult(new GetAllPlayersResponse(players));
     }
     
-    [FunctionName("IssueChallenge")]
+    [Function("IssueChallenge")]
     public async Task<IssueChallengeResponse> IssueChallenge(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = $"Challenge/Issue")] HttpRequest req,
-        ILogger log)
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = $"Challenge/Issue")] HttpRequest req)
     {
         var result = await JsonSerializer.DeserializeAsync<IssueChallengeRequest>(req.Body, jsonOptions);
 
@@ -186,9 +180,9 @@ public class GameHub : ServerlessHub
                         select p).FirstOrDefault();
 
         if (challenger is null)
-            throw new ArgumentException(paramName: nameof(challenger), message: $"{challenger.GamerTag} is not a valid player.");
+            throw new ArgumentException(paramName: nameof(challenger), message: $"{result.Challenger.GamerTag} is not a valid player.");
         if (opponent is null)
-            throw new ArgumentException(paramName: nameof(opponent), message: $"{opponent.GamerTag} is not a valid player.");
+            throw new ArgumentException(paramName: nameof(opponent), message: $"{result.Opponent.GamerTag} is not a valid player.");
 
         var challengerInMatch = (from g in context.Matches
                                 where g.PlayerOneId == challengerId || g.PlayerTwoId == challengerId
@@ -206,33 +200,33 @@ public class GameHub : ServerlessHub
 
         Guid matchId = Guid.Empty;
 
-        log.LogInformation($"{challenger.GamerTag} has challenged {opponent.GamerTag} to a match!");
+        logger.LogInformation("{Challenger} has challenged {Opponent} to a match!", challenger.GamerTag, opponent.GamerTag);
 
         var challengeInfo = challengeHandler.CreateChallenge(challenger, opponent);
-        log.LogInformation($"Challenge [{challengeInfo.id}] has been created.");
+        logger.LogInformation("Challenge [{ChallengeInfoId}] has been created.", challengeInfo.id);
 
-        log.LogInformation($"Waiting on response from {opponent.GamerTag} for challenge[{challengeInfo.id}].");
-        await Clients.User(opponent.Id.ToString()).SendAsync(Constants.Events.Challenge, new ChallengeEventArgs(challengeInfo.id, challenger, opponent));
+        logger.LogInformation("Waiting on response from {Opponent} for challenge[{ChallengeInfoId}].", opponent.GamerTag, challengeInfo.id);
+
+        await Clients.User(opponent.Id.ToString()).Challenge( new ChallengeEventArgs(challengeInfo.id, challenger, opponent));
 
         ChallengeResponse response;
         try
         {
             var challenge = await challengeInfo.responseTask.ConfigureAwait(false);
-            log.LogInformation($"Got response from {opponent.GamerTag} for challenge[{challengeInfo.id}].");
+            logger.LogInformation("Got response from {Opponent} for challenge[{ChallengeInfoId}].", opponent.GamerTag, challengeInfo.id);
             response = challenge.Response;
         }
         catch 
         {
-            log.LogInformation($"Never received a response from {opponent.GamerTag} for challenge[{challengeInfo.id}], it timed out.");
+            logger.LogInformation("Never received a response from {Opponent} for challenge[{ChallengeInfoId}], it timed out.",  opponent.GamerTag, challengeInfo.id);
             response = ChallengeResponse.TimeOut;
         }
         return new(response);
     }
 
-    [FunctionName("AcknowledgeChallenge")]
+    [Function("AcknowledgeChallenge")]
     public async Task AcknowledgeChallenge(
-    [HttpTrigger(AuthorizationLevel.Function, "post", Route = $"Challenge/Ack")] HttpRequest req,
-    ILogger log)
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = $"Challenge/Ack")] HttpRequest req)
     {
         var result = await JsonSerializer.DeserializeAsync<AcknowledgeChallengeRequest>(req.Body, jsonOptions);
 
@@ -247,12 +241,12 @@ public class GameHub : ServerlessHub
 
         if (result.Response == ChallengeResponse.Declined)
         {
-            log.LogInformation($"{opponent.GamerTag} has declined the challenge from {challenger.GamerTag}!");
+            logger.LogInformation("{Opponent} has declined the challenge from {Challenger}!", opponent.GamerTag, challenger.GamerTag);
         }
 
         if (result.Response == ChallengeResponse.Accepted)
         {
-            log.LogInformation($"{opponent.GamerTag} has accepted the challenge from {challenger.GamerTag}!");
+            logger.LogInformation("{Opponent} has accepted the challenge from {Challenger}!", opponent.GamerTag, challenger.GamerTag);
 
             using var context = contextFactory.CreateDbContext();
 
@@ -265,41 +259,43 @@ public class GameHub : ServerlessHub
             context.Players.Update(challenger);
             context.SaveChanges();
 
-            log.LogInformation($"Created match {match.Id} bewteen {opponent.GamerTag} and {challenger.GamerTag}!");
+            logger.LogInformation("Created match {Match} bewteen {Opponent} and {Challenger}!",match.Id, opponent.GamerTag, challenger.GamerTag);
 
             // Create Group for Game
             await UserGroups.AddToGroupAsync(opponent.Id.ToString(), $"Match[{match.Id}]");
             await UserGroups.AddToGroupAsync(challenger.Id.ToString(), $"Match[{match.Id}]");
-            await Clients.Group($"Match[{match.Id}]").SendAsync(Constants.Events.MatchStarted, new MatchStartedEventArgs(match));
+            await Clients.Group($"Match[{match.Id}]").MatchStarted(new MatchStartedEventArgs(match));
 
-            await Clients.All.SendAsync(Constants.Events.PlayerUpdated, new PlayerUpdatedEventArgs(opponent));
-            await Clients.All.SendAsync(Constants.Events.PlayerUpdated, new PlayerUpdatedEventArgs(challenger));
+            await Clients.All.PlayerUpdated(new PlayerUpdatedEventArgs(opponent));
+            await Clients.All.PlayerUpdated(new PlayerUpdatedEventArgs(challenger));
         }
     }
 
-    [FunctionName("GetMatch")]
+    [Function("GetMatch")]
     public IActionResult GetMatch(
-    [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Match/{id}")] HttpRequest req,
-    Guid id,
-    ILogger log)
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Match/{id}")] HttpRequest req,
+        Guid id)
     {
         using var context = contextFactory.CreateDbContext();
 
-        Match match = (from m in context.Matches where m.Id == id select m).FirstOrDefault();
-        return new OkObjectResult(new GetMatchResponse(match));
+        var match = (from m in context.Matches where m.Id == id select m).FirstOrDefault();
+        ObjectResult result = new BadRequestObjectResult("Match not found");
+        if (match != null) {
+            result = new OkObjectResult(new GetMatchResponse(match));
+        }
+        return result;
     }
     
-    [FunctionName("ProcessTurn")]
+    [Function("ProcessTurn")]
     public async Task<IActionResult> ProcessTurn(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = $"Game/Move")] HttpRequest req,
-        ILogger log)
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = $"Game/Move")] HttpRequest req)
     {
         var args = await JsonSerializer.DeserializeAsync<ProcessTurnRequest>(req.Body, jsonOptions);
 
         var error = ValidateProcessTurnRequest(args);
         if (error is not null)
         {
-            log.LogError(error, "Error validating turn request.");
+            logger.LogError(error, "Error validating turn request.");
             return new BadRequestObjectResult(error);
         }
 
@@ -311,7 +307,7 @@ public class GameHub : ServerlessHub
         if (error is not null)
         {
             await SaveMatchAndSendUpdates(context, match);
-            log.LogError(error, "Error validating match state.");
+            logger.LogError(error, "Error validating match state.");
             return new BadRequestObjectResult(error);
         }
 
@@ -385,7 +381,7 @@ public class GameHub : ServerlessHub
         return new OkObjectResult(new ProcessTurnResponse(match));
     }
 
-    private Exception ValidateProcessTurnRequest(ProcessTurnRequest args)
+    private Exception? ValidateProcessTurnRequest(ProcessTurnRequest args)
     {
         if (args.MatchId == Guid.Empty)
         {
@@ -403,7 +399,7 @@ public class GameHub : ServerlessHub
         return null;
     }
 
-    private Exception VerifyMatchState(Match match, ProcessTurnRequest args)
+    private Exception? VerifyMatchState(Match match, ProcessTurnRequest args)
     {
         if (match is null)
         {
@@ -463,7 +459,7 @@ public class GameHub : ServerlessHub
     {
         context.Matches.Update(match);
         await context.SaveChangesAsync();
-        await Clients.Group($"Match[{match.Id}]").SendAsync(Constants.Events.MatchUpdated, new MatchUpdatedEventArgs(match));
+        await Clients.Group($"Match[{match.Id}]").MatchUpdated(new MatchUpdatedEventArgs(match));
         if (match.Completed)
         {
             await UserGroups.RemoveFromGroupAsync(match.PlayerOneId.ToString(), $"Match[{match.Id}]");

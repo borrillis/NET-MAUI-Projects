@@ -14,7 +14,7 @@ public sealed class ServiceConnection : IDisposable
     private readonly HttpClient httpClient;
     private readonly JsonSerializerOptions serializerOptions;
 
-    public AsyncLazy<HubConnection> Hub { get; private set; }
+    public AsyncLazy<HubConnection>? Hub { get; private set; }
 
     public ServiceConnection(ILogger<ServiceConnection> logger, Settings settings)
     {
@@ -35,7 +35,7 @@ public sealed class ServiceConnection : IDisposable
         {
             var connectionBuilder = new HubConnectionBuilder();
 
-            connectionBuilder.WithUrl(config.Url, (HttpConnectionOptions obj) =>
+            connectionBuilder.WithUrl(config.Url!, (HttpConnectionOptions obj) =>
             {
                 obj.AccessTokenProvider = async () => await Task.FromResult(config.AccessToken);
             });
@@ -68,7 +68,7 @@ public sealed class ServiceConnection : IDisposable
 
         try
         {
-            error = await JsonSerializer.DeserializeAsync<AsyncError>(content, serializerOptions);
+            error = await JsonSerializer.DeserializeAsync<AsyncError>(content, serializerOptions) ?? new AsyncError();
         }
         catch (Exception e)
         {
@@ -79,10 +79,11 @@ public sealed class ServiceConnection : IDisposable
             };
         }
 
-        log.LogError("{@Error} {@Message} for {@Uri}", responseMessage.StatusCode, error?.Message, responseMessage?.RequestMessage?.RequestUri);
+        log.LogError("{@Error} {@Message} for {@Uri}", responseMessage.StatusCode, error.Message, responseMessage?.RequestMessage?.RequestUri);
         return error;
     }
-    public async Task<(T Result, AsyncError Exception)> GetAsync<T>(Uri uri, Dictionary<string, string> parameters)
+
+    public async Task<(T? Result, AsyncError? Exception)> GetAsync<T>(Uri uri, Dictionary<string, string> parameters)
     {
         var builder = GetUriBuilder(uri, parameters);
         var fullUri = builder.ToString();
@@ -125,7 +126,7 @@ public sealed class ServiceConnection : IDisposable
         }
     }
 
-    public async Task<(T Result, AsyncError Exception)> PostAsync<T>(Uri uri, object parameter)
+    public async Task<(T? Result, AsyncError? Exception)> PostAsync<T>(Uri uri, object parameter)
     {
         log.LogDebug("{@ObjectType} Post REST call @{RestUrl}", typeof(T).Name, uri);
         try
