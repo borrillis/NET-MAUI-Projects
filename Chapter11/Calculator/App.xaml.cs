@@ -10,10 +10,10 @@
         protected override void OnHandlerChanging(HandlerChangingEventArgs args)
         {
             base.OnHandlerChanging(args);
-            MainPage = args.NewHandler.MauiContext.Services.GetService<MainPage>();
+            MainPage = args.NewHandler.MauiContext!.Services.GetService<MainPage>();
         }
 
-        protected override Window CreateWindow(IActivationState activationState)
+        protected override Window CreateWindow(IActivationState? activationState)
         {
             var window = base.CreateWindow(activationState);
             if (OperatingSystem.IsWindows() || OperatingSystem.IsMacCatalyst())
@@ -23,8 +23,11 @@
             return window;
         }
 
-        private async void Window_Created(object sender, EventArgs e)
+        private async void Window_Created(object? sender, EventArgs e)
         {
+            if (sender is null)
+                return;
+
             const int defaultWidth = 450;
             const int defaultHeight = 800;
 

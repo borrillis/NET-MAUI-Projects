@@ -53,6 +53,7 @@
         if (clearInputBeforeAppend)
         {
             inputDisplay = string.Empty;
+            clearInputBeforeAppend = false;
         }
 
         //disallow operators as first character
@@ -80,7 +81,6 @@
             return;
         }
 
-        clearInputBeforeAppend = false;
         inputDisplay += inputValue;
     }
 
