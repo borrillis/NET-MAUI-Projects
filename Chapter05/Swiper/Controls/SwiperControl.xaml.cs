@@ -12,8 +12,8 @@ public partial class SwiperControl : ContentView
     private const double DeadZone = 0.4d;
     private const double DecisionThreshold = 0.4d;
 
-    public event EventHandler OnLike; 
-    public event EventHandler OnDeny;
+    public event EventHandler? OnLike;
+    public event EventHandler? OnDeny;
 
     public SwiperControl()
     {
@@ -23,7 +23,7 @@ public partial class SwiperControl : ContentView
         descriptionLabel.Text = picture.Description;
         image.Source = new UriImageSource() { Uri = picture.Uri };
 
-        loadingLabel.SetBinding(IsVisibleProperty, "IsLoading"); 
+        loadingLabel.SetBinding(IsVisibleProperty, "IsLoading");
         loadingLabel.BindingContext = image;
 
         var panGesture = new PanGestureRecognizer();
@@ -38,7 +38,7 @@ public partial class SwiperControl : ContentView
     {
         base.OnSizeAllocated(width, height);
 
-        if (Application.Current.MainPage == null)
+        if (Application.Current?.MainPage is null)
         {
             return;
         }
@@ -59,7 +59,7 @@ public partial class SwiperControl : ContentView
         }
 
         var passedDeadzone = panX < 0 ? panX + deadZoneEnd : panX - deadZoneEnd;
-        var decisionZoneEnd = DecisionThreshold * halfScreenWidth; 
+        var decisionZoneEnd = DecisionThreshold * halfScreenWidth;
         var opacity = passedDeadzone / decisionZoneEnd;
 
         opacity = double.Clamp(opacity, -1d, 1d);
@@ -92,14 +92,16 @@ public partial class SwiperControl : ContentView
                 OnDeny?.Invoke(this, new EventArgs());
             }
 
-            await photo.TranslateTo(photo.TranslationX + (_screenWidth * direction), photo.TranslationY, 200, Easing.CubicIn); 
-            var parent = Parent as Layout; 
+            await photo.TranslateTo(photo.TranslationX + (_screenWidth * direction), photo.TranslationY, 200, Easing.CubicIn);
+            var parent = Parent as Layout;
             parent?.Children.Remove(this);
         });
     }
 
-    private void OnPanUpdated(object sender, PanUpdatedEventArgs e)
+    private void OnPanUpdated(object? sender, PanUpdatedEventArgs? e)
     {
+        if (e is null) throw new ArgumentNullException(nameof(e), "Event arguments must be supplied.");
+
         switch (e.StatusType)
         {
             case GestureStatus.Started:

@@ -7,8 +7,8 @@ internal class Picture
 
     public Picture()
     {
-        Uri = new Uri($"https://picsum.photos/400/400/?random&ts={ DateTime.Now.Ticks }");    
-        var generator = new DescriptionGenerator(); 
+        Uri = new Uri($"https://picsum.photos/400/400/?random&ts={DateTime.Now.Ticks}");
+        var generator = new DescriptionGenerator();
         Description = generator.Generate();
     }
 }
