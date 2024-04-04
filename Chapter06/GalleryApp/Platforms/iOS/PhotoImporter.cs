@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 
 internal partial class PhotoImporter
 {
-    private Dictionary<string,PHAsset> assets;
+    private Dictionary<string,PHAsset> assets = [];
 
     private partial async Task<string[]> Import()
     {
@@ -19,7 +19,7 @@ internal partial class PhotoImporter
             .Select(x => (PHAsset)x)
             .ToDictionary(asset => asset.ValueForKey((NSString)"filename").ToString(), asset => asset);
         }
-        return await Task.FromResult(assets?.Keys.ToList().ToArray());
+        return await Task.FromResult(assets.Keys.ToList().ToArray());
     }
 
     public partial async Task<ObservableCollection<Photo>> Get(int start, int count, Quality quality)
@@ -27,7 +27,7 @@ internal partial class PhotoImporter
         var photos = new ObservableCollection<Photo>();
 
         var result = await Import();
-        if (result?.Length == 0)
+        if (result is null || result.Length == 0)
         {
             return photos;
         }
@@ -52,12 +52,12 @@ internal partial class PhotoImporter
         return photos;
     }
 
-    public partial async Task<ObservableCollection<Photo>> Get(List<string> filenames, Quality quality)
+    public partial async Task<ObservableCollection<Photo>> Get(IList<string> filenames, Quality quality)
     {
         var photos = new ObservableCollection<Photo>();
 
         var result = await Import();
-        if (result?.Length == 0)
+        if (result is null || result.Length == 0)
         {
             return photos;
         }
@@ -85,14 +85,17 @@ internal partial class PhotoImporter
 
         PHImageManager.DefaultManager.RequestImageForAsset(asset, PHImageManager.MaximumSize, PHImageContentMode.AspectFill, options, (image, info) =>
         {
-            using NSData imageData = image.AsPNG();
-            var bytes = new byte[imageData.Length]; 
-            System.Runtime.InteropServices.Marshal.Copy(imageData.Bytes, bytes, 0, Convert.ToInt32(imageData.Length));
-            photos.Add(new Photo()
+            using NSData? imageData = image.AsPNG();
+            if (imageData is not null)
             {
-                Bytes = bytes,
-                Filename = Path.GetFileName(path)
-            });
+                var bytes = new byte[imageData.Length];
+                System.Runtime.InteropServices.Marshal.Copy(imageData.Bytes, bytes, 0, Convert.ToInt32(imageData.Length));
+                photos.Add(new Photo()
+                {
+                    Bytes = bytes,
+                    Filename = Path.GetFileName(path)
+                });
+            }
         });
     }
 }

@@ -21,7 +21,8 @@ public partial class GalleryViewModel : ViewModel
     public GalleryViewModel(IPhotoImporter photoImporter, ILocalStorage localStorage) : base()
     {
         this.photoImporter = photoImporter; 
-        this.localStorage = localStorage; 
+        this.localStorage = localStorage;
+        Photos = [];
     }
 
     override protected internal async Task Initialize()
@@ -34,7 +35,7 @@ public partial class GalleryViewModel : ViewModel
         IsBusy = false;
     }
 
-    private void Photos_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    private void Photos_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
         if (e.NewItems != null && e.NewItems.Count > 0)
         {
@@ -55,17 +56,22 @@ public partial class GalleryViewModel : ViewModel
     }
 
     private int itemsAdded;
-    private void Collection_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs args)
+    private void Collection_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs args)
     {
+        if (args.NewItems is null)
+            return;
+
         foreach (Photo photo in args.NewItems)
         {
-            itemsAdded++; 
+            itemsAdded++;
             Photos.Add(photo);
         }
+
         if (itemsAdded == 20)
         {
-            var collection = (ObservableCollection<Photo>)sender; 
-            collection.CollectionChanged -= Collection_CollectionChanged;
+            var collection = sender as ObservableCollection<Photo>;
+            if (collection is not null)
+                collection.CollectionChanged -= Collection_CollectionChanged;
         }
     }
 
@@ -73,9 +79,7 @@ public partial class GalleryViewModel : ViewModel
     public void AddFavorites(List<Photo> photos)
     {
         foreach (var photo in photos)
-        {
-            localStorage.Store(photo.Filename);
-        }
+            LocalStorage.Store(photo.Filename);
         WeakReferenceMessenger.Default.Send<string>(Messages.FavoritesAddedMessage);
     }
 }

@@ -11,9 +11,9 @@ public class MauiLocalStorage : ILocalStorage
         if (Preferences.ContainsKey(FavoritePhotosKey))
         {
             var filenames = Preferences.Get(FavoritePhotosKey,string.Empty);
-            return JsonSerializer.Deserialize<List<string>>(filenames);
+            return JsonSerializer.Deserialize<List<string>>(filenames) ?? [];
         }
-        return new List<string>();
+        return [];
     }
 
     public void Store(string filename)

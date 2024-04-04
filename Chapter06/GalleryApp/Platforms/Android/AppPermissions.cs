@@ -13,14 +13,14 @@ internal partial class AppPermissions
         {
             get
             {
-                List<(string androidPermission, bool isRuntime)> perms = new();
+#pragma warning disable CA1416 // Validate platform compatibility
+                List<(string androidPermission, bool isRuntime)> perms =
+                [
+                    Build.VERSION.SdkInt >= BuildVersionCodes.Tiramisu ? (Android.Manifest.Permission.ReadMediaImages, true) : (Android.Manifest.Permission.ReadExternalStorage, true),
+                ];
+#pragma warning restore CA1416 // Validate platform compatibility
 
-                if (Build.VERSION.SdkInt >= BuildVersionCodes.Tiramisu)
-                    perms.Add((global::Android.Manifest.Permission.ReadMediaImages, true));
-                else
-                    perms.Add((global::Android.Manifest.Permission.ReadExternalStorage, true));
-
-                return perms.ToArray();
+                return [.. perms];
             }
         }
     }

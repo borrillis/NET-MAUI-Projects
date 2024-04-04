@@ -15,12 +15,13 @@ public partial class MainViewModel : ViewModel
     private ObservableCollection<Photo> recent;
 
     [ObservableProperty]
-    private ObservableCollection<Photo> favorites;
+    private ObservableCollection<Photo>? favorites;
 
     public MainViewModel(IPhotoImporter photoImporter, ILocalStorage localStorage)
     {
         this.photoImporter = photoImporter; 
         this.localStorage = localStorage;
+        Recent = [];
     }
 
     override protected internal async Task Initialize()
@@ -43,7 +44,7 @@ public partial class MainViewModel : ViewModel
         var filenames = localStorage.Get();
         var favorites = await photoImporter.Get(filenames, Quality.Low);
 
-        Favorites = favorites; 
+        Favorites = favorites.Count > 0 ? favorites : null; 
     }
 }
 

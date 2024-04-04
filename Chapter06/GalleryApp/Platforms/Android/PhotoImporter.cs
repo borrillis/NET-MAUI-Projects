@@ -15,17 +15,20 @@ internal partial class PhotoImporter
         {
 
             var imageUri = MediaStore.Images.Media.ExternalContentUri;
+            if (imageUri is null)
+                return [.. paths];
             var projection = new string[] { MediaStore.IMediaColumns.Data };
             //var selection = new string[] { "image/jpeg", "image/png" };
             var orderBy = MediaStore.Images.IImageColumns.DateTaken;
-            var cursor = Platform.CurrentActivity.ContentResolver.Query(imageUri, projection, /*MediaStore.IMediaColumns.MimeType, selection*/ null, null, orderBy);
-            while (cursor.MoveToNext())
+            var cursor = Platform.CurrentActivity?.ContentResolver?.Query(imageUri, projection, /*MediaStore.IMediaColumns.MimeType, selection*/ null, null, orderBy);
+            while (cursor?.MoveToNext() ?? false)
             {
-                string path = cursor.GetString(cursor.GetColumnIndex(MediaStore.IMediaColumns.Data));
-                paths.Add(path);
+                string? path = cursor.GetString(cursor.GetColumnIndex(MediaStore.IMediaColumns.Data));
+                if (path is not null)
+                    paths.Add(path);
             }
         }
-        return paths.ToArray();
+        return [.. paths];
     }
 
     public partial async Task<ObservableCollection<Photo>> Get(int start, int count, Quality quality)
@@ -63,13 +66,13 @@ internal partial class PhotoImporter
         return photos;
     }
 
-    public partial async Task<ObservableCollection<Photo>> Get(List<string> filenames, Quality quality)
+    public partial async Task<ObservableCollection<Photo>> Get(IList<string> filenames, Quality quality)
     {
         var photos = new ObservableCollection<Photo>();
 
         var result = await Import();
 
-        if (result.Length == 0)
+        if (result is null || result.Length == 0)
         {
             return photos;
         }
