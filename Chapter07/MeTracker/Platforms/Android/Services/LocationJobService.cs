@@ -11,29 +11,29 @@ namespace MeTracker.Platforms.Android.Services;
 [Service(Name = "MeTracker.PLatforms.Android.Services.LocationJobService", Permission = "android.permission.BIND_JOB_SERVICE")]
 internal class LocationJobService : JobService, ILocationListener
 {
-    private ILocationRepository locationRepository;
-    private static LocationManager locationManager;
+    private readonly ILocationRepository? locationRepository;
+    private static LocationManager? locationManager;
 
     public LocationJobService()
     {
-        locationRepository = MauiApplication.Current.Services.GetService<ILocationRepository>();
+        locationRepository = IPlatformApplication.Current?.Services.GetService<ILocationRepository>();
     }
 
-    public override bool OnStartJob(JobParameters @params)
+    public override bool OnStartJob(JobParameters? @params)
     {
         PermissionStatus status = PermissionStatus.Unknown;
         Task.Run(async () => status = await AppPermissions.CheckRequiredPermissionAsync()).Wait();
         if (status == PermissionStatus.Granted)
         {
-            locationManager = (LocationManager)ApplicationContext.GetSystemService(Context.LocationService);
-            locationManager.RequestLocationUpdates(LocationManager.GpsProvider, 1000L, 0.1f, this);
+            locationManager = ApplicationContext?.GetSystemService(Context.LocationService) as LocationManager;
+            locationManager?.RequestLocationUpdates(LocationManager.GpsProvider, 1000L, 0.1f, this);
 
             return true;
         }
         return false;
     }
 
-    public override bool OnStopJob(JobParameters @params)
+    public override bool OnStopJob(JobParameters? @params)
     {
         return true;
     }
@@ -41,7 +41,7 @@ internal class LocationJobService : JobService, ILocationListener
     public void OnLocationChanged(global::Android.Locations.Location location)
     {
         var newLocation = new Models.Location(location.Latitude, location.Longitude);
-        locationRepository.SaveAsync(newLocation);
+        locationRepository?.SaveAsync(newLocation);
     }
 
     public void OnProviderDisabled(string provider)
@@ -52,7 +52,7 @@ internal class LocationJobService : JobService, ILocationListener
     {
     }
 
-    public void OnStatusChanged(string provider, [GeneratedEnum] Availability status, Bundle extras)
+    public void OnStatusChanged(string? provider, [GeneratedEnum] Availability status, Bundle? extras)
     {
     }
 }

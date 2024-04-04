@@ -11,10 +11,9 @@ public class CustomMap : Microsoft.Maui.Controls.Maps.Map
 
     private static void OnPointsChanged(BindableObject bindable, object oldValue, object newValue)
     {
-        var map = bindable as Map;
-        if (newValue == null) return;
-        if (map is null) return;
-        foreach (var point in newValue as List<Models.Point>)
+        if (newValue is not List<Models.Point> points) return;
+        if (bindable is not Map map) return;
+        foreach (var point in points)
         {
             // Instantiate a Circle
             Circle circle = new()
@@ -31,7 +30,7 @@ public class CustomMap : Microsoft.Maui.Controls.Maps.Map
         }
     }
 
-    public List<Models.Point> Points
+    public List<Models.Point>? Points
     {
         get => GetValue(PointsProperty) as List<Models.Point>;
         set => SetValue(PointsProperty, value);

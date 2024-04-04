@@ -17,16 +17,13 @@ public partial class MainView : ContentPage
             var status = await AppPermissions.CheckAndRequestRequiredPermissionAsync();
             if (status == PermissionStatus.Granted)
             {
-                var location = await Geolocation.GetLastKnownLocationAsync();
-
-                if (location == null)
+                var location = await Geolocation.GetLastKnownLocationAsync() ?? await Geolocation.GetLocationAsync();
+                if (location is not null)
                 {
-                    location = await Geolocation.GetLocationAsync();
+                    Map.MoveToRegion(MapSpan.FromCenterAndRadius(
+                        location,
+                        Distance.FromKilometers(5)));
                 }
-
-                Map.MoveToRegion(MapSpan.FromCenterAndRadius(
-                    location,
-                    Distance.FromKilometers(5)));
             }
         });
 

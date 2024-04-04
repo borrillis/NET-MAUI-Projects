@@ -5,7 +5,7 @@ namespace MeTracker.Services;
 
 public partial class LocationTrackingService : ILocationTrackingService
 {
-    CLLocationManager locationManager;
+    CLLocationManager? locationManager;
     ILocationRepository locationRepository;
 
     public LocationTrackingService(ILocationRepository locationRepository)
@@ -22,7 +22,7 @@ public partial class LocationTrackingService : ILocationTrackingService
             DesiredAccuracy = CLLocation.AccurracyBestForNavigation,
         };
 
-        locationManager.LocationsUpdated += async (object sender, CLLocationsUpdatedEventArgs e) =>
+        locationManager.LocationsUpdated += async (object? sender, CLLocationsUpdatedEventArgs e) =>
         {
             var lastLocation = e.Locations.Last();
             var newLocation = new Models.Location(lastLocation.Coordinate.Latitude, lastLocation.Coordinate.Longitude);

@@ -10,7 +10,7 @@ public partial class MainViewModel : ViewModel
     private readonly ILocationTrackingService locationTrackingService;
 
     [ObservableProperty]
-    private List<Models.Point> points;
+    private List<Models.Point>? points;
 
     public MainViewModel(ILocationTrackingService locationTrackingService, ILocationRepository locationRepository)
     {
@@ -31,7 +31,7 @@ public partial class MainViewModel : ViewModel
         foreach (var location in locations)
         {
             //If no points exist, create a new one and continue to the next location in the list
-            if (!pointList.Any())
+            if (pointList.Count == 0)
             {
                 pointList.Add(new Models.Point() { Location = location });
                 continue;

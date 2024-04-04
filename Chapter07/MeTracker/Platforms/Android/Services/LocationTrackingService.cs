@@ -10,16 +10,20 @@ public partial class LocationTrackingService : ILocationTrackingService
     {
         var javaClass = Java.Lang.Class.FromType(typeof(LocationJobService));
         var componentName = new ComponentName(global::Android.App.Application.Context, javaClass);
-        var jobBuilder = new JobInfo.Builder(1, componentName);
+        var builder = new JobInfo.Builder(1, componentName)
+            .SetOverrideDeadline(1000)
+            ?.SetPersisted(true)
+            ?.SetRequiresDeviceIdle(false);
 
-        jobBuilder.SetOverrideDeadline(1000);
-        jobBuilder.SetPersisted(true);
-        jobBuilder.SetRequiresDeviceIdle(false);
-        jobBuilder.SetRequiresBatteryNotLow(true);
+        if (OperatingSystem.IsIOSVersionAtLeast(26)) {
+            builder?.SetRequiresBatteryNotLow(true);
+        }
+        var jobInfo = builder?.Build();
 
-        var jobInfo = jobBuilder.Build();
-
-        var jobScheduler = (JobScheduler)global::Android.App.Application.Context.GetSystemService(Context.JobSchedulerService);
-        jobScheduler.Schedule(jobInfo);
+        var jobScheduler = global::Android.App.Application.Context.GetSystemService(Context.JobSchedulerService) as JobScheduler;
+        if (jobInfo is not null)
+        {
+            jobScheduler?.Schedule(jobInfo);
+        }
     }
 }
