@@ -5,7 +5,7 @@ namespace HotdogOrNot.Converters;
 public class BytesToImageConverter : IValueConverter
 {
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value == null)
         {
@@ -17,7 +17,7 @@ public class BytesToImageConverter : IValueConverter
         return ImageSource.FromStream(() => stream);
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         throw new NotImplementedException();
     }

@@ -12,6 +12,9 @@ internal partial class AppPermissions
         if (status == PermissionStatus.Granted)
             return status;
 
+        if (App.Current is null || App.Current.MainPage is null)
+            return status;
+
         if (status == PermissionStatus.Denied && DeviceInfo.Platform == DevicePlatform.iOS)
         {
             // Prompt the user to turn on in settings

@@ -6,13 +6,13 @@ namespace HotdogOrNot.ViewModels;
 public partial class ResultViewModel : ObservableObject, IQueryAttributable
 {
 	[ObservableProperty]
-	private string title;
+	private string title = string.Empty;
 
 	[ObservableProperty]
-	private string description;
+	private string description = string.Empty;
 
 	[ObservableProperty]
-	byte[] photoBytes;
+	byte[] photoBytes = [];
 
 	public ResultViewModel()
 	{
@@ -23,8 +23,10 @@ public partial class ResultViewModel : ObservableObject, IQueryAttributable
         Initialize(query["result"] as Result);
     }
 
-    public void Initialize(Result result)
+    public void Initialize(Result? result)
     {
+        if (result is null) return;
+        
         PhotoBytes = result.PhotoBytes;
 
         if (result.IsHotdog && result.Confidence > 0.9)

@@ -7,8 +7,8 @@ namespace HotdogOrNot.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
-    IClassifier classifier;
-    Task initTask;
+    IClassifier? classifier = null;
+    Task initTask = Task.CompletedTask;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(TakePhotoCommand))]
@@ -51,12 +51,14 @@ public partial class MainViewModel : ObservableObject
             }
             if (status == PermissionStatus.Granted)
             {
-                FileResult photo = await MediaPicker.Default.CapturePhotoAsync(new MediaPickerOptions() { Title = "Hotdog or Not?" });
-                var imageToClassify = await ConvertPhotoToBytes(photo);
-                var result = await RunClassificationAsync(imageToClassify);
-                await MainThread.InvokeOnMainThreadAsync(async () => await
-                    Shell.Current.GoToAsync("Result", new Dictionary<string, object>() { { "result", result } })
-                );
+                FileResult? photo = await MediaPicker.Default.CapturePhotoAsync(new MediaPickerOptions() { Title = "Hotdog or Not?" });
+                if (photo is not null) {
+                    var imageToClassify = await ConvertPhotoToBytes(photo);
+                    var result = await RunClassificationAsync(imageToClassify);
+                    await MainThread.InvokeOnMainThreadAsync(async () => await
+                        Shell.Current.GoToAsync("Result", new Dictionary<string, object>() { { "result", result } })
+                    );
+                }
             }
         }
     }
@@ -67,12 +69,14 @@ public partial class MainViewModel : ObservableObject
         var status = await AppPermissions.CheckAndRequestRequiredPermissionAsync<Permissions.Photos>();
         if (status == PermissionStatus.Granted)
         {
-            FileResult photo = await MediaPicker.Default.PickPhotoAsync();
-            var imageToClassify = await ConvertPhotoToBytes(photo);
-            var result = await RunClassificationAsync(imageToClassify);
-            await MainThread.InvokeOnMainThreadAsync(async () => await
-                Shell.Current.GoToAsync("Result", new Dictionary<string, object>() { { "result", result } })
-            );
+            FileResult? photo = await MediaPicker.Default.PickPhotoAsync();
+            if ( photo is not null) {
+                var imageToClassify = await ConvertPhotoToBytes(photo);
+                var result = await RunClassificationAsync(imageToClassify);
+                await MainThread.InvokeOnMainThreadAsync(async () => await
+                    Shell.Current.GoToAsync("Result", new Dictionary<string, object>() { { "result", result } })
+                );
+            }
         }
     }
 
@@ -96,6 +100,13 @@ public partial class MainViewModel : ObservableObject
         try
         {
             await InitAsync().ConfigureAwait(false);
+            if (classifier is null) return  new Result
+            {
+                IsHotdog = false,
+                Confidence = 0.0f,
+                PhotoBytes = imageToClassify
+            };
+
             var result = classifier.Classify(imageToClassify);
             return new Result()
             {
@@ -104,8 +115,9 @@ public partial class MainViewModel : ObservableObject
                 PhotoBytes = result.Image
             };
         }
-        catch 
+        catch( Exception ex)  
         {
+            await Shell.Current.DisplayAlert("Exception Encountered",$"{ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}", "Cancel");
             return new Result
             {
                 IsHotdog = false,

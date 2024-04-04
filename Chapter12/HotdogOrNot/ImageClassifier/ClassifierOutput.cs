@@ -3,11 +3,11 @@ namespace HotdogOrNot.ImageClassifier;
 
 internal sealed class ClassifierOutput
 {
-    public string TopResultLabel { get; private set; }
-    public float TopResultScore { get; private set; }
-    public IDictionary<string, float> LabelScores { get; private set; }
+    public string TopResultLabel { get; private set; } = string.Empty;
+    public float TopResultScore { get; private set; } = 0;
+    public IDictionary<string, float> LabelScores { get; private set; } = new Dictionary<string, float>();
 
-    public byte[] Image { get; private set; }
+    public byte[] Image { get; private set; } = [];
 
     ClassifierOutput() { }
 
